@@ -9,7 +9,7 @@
 
   logoMagnet.draw();
 
-  logoMagnet.animate();
+  //logoMagnet.animate();
 
   window.logoMagnet = logoMagnet;
 }());

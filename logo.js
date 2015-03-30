@@ -99,8 +99,9 @@
       this.ctx.restore();
     },
 
-    renderBackground: function() {
+    renderBackground: function(color) {
       var ctx = this.background.ctx;
+      color = color || 'rgb(40, 175, 206)';
       // #layerBackground
 
       // #rectBackground
@@ -109,23 +110,24 @@
       ctx.lineCap = 'butt';
       ctx.miterLimit = 4;
       ctx.lineWidth = 3.000000;
-      ctx.fillStyle = 'rgb(40, 175, 206)';
+      ctx.fillStyle = color;
       ctx.rect(0.000000, 0.000000, 600.000000, 600.000000);
       ctx.fill();
 
       this.ctx.drawImage(this.background.canvas, 0, 0);
     },
 
-    renderManta: function() {
-      this.renderPerimeter();
+    renderManta: function(color) {
+      this.renderPerimeter(color);
       this.renderRightEye();
       this.renderLeftEye();
       this.renderMantaGill();
       this.ctx.drawImage(this.manta.canvas, 0, 0);
     },
 
-    renderPerimeter: function() {
+    renderPerimeter: function(color) {
       var ctx = this.manta.ctx;
+      color = color || 'rgb(40, 175, 206)';
 
       // #layerManta
 
@@ -136,7 +138,7 @@
       ctx.lineCap = 'butt';
       ctx.miterLimit = 4;
       ctx.lineWidth = 3.000000;
-      ctx.fillStyle = 'rgb(40, 175, 206)';
+      ctx.fillStyle = color;
       ctx.moveTo(73.977794, 282.246470);
       ctx.bezierCurveTo(73.883624, 257.774170, 126.304670, 235.789760, 167.909670, 213.081560);
       ctx.bezierCurveTo(210.484640, 190.947100, 263.150880, 157.254600, 269.623680, 148.155170);
@@ -162,9 +164,7 @@
       ctx.bezierCurveTo(198.001420, 326.989120, 154.068400, 293.230440, 126.355340, 286.487540);
       ctx.bezierCurveTo(106.983590, 281.774170, 88.442594, 282.034780, 73.977794, 282.246470);
       ctx.fill();
-      ctx.stroke();
-    },
-
+      ctx.stroke(); },
     renderRightEye: function() {
       var ctx = this.manta.ctx;
 
@@ -214,8 +214,10 @@
       ctx.fill();
     },
 
-    renderText: function() {
+    renderText: function(color) {
       var ctx = this.text.ctx;
+
+      color = color || 'rgb(87, 87, 87)';
 
       // #layerText
 
@@ -224,7 +226,7 @@
       ctx.lineJoin = 'miter';
       ctx.lineCap = 'butt';
       ctx.lineWidth = 1.000000;
-      ctx.fillStyle = 'rgb(87, 87, 87)';
+      ctx.fillStyle = color;
       ctx.moveTo(5.200000, 627.099980);
       ctx.lineTo(16.200000, 627.099980);
       ctx.lineTo(33.300000, 676.799980);
@@ -245,7 +247,7 @@
       ctx.lineJoin = 'miter';
       ctx.lineCap = 'butt';
       ctx.lineWidth = 1.000000;
-      ctx.fillStyle = 'rgb(87, 87, 87)';
+      ctx.fillStyle = color;
       ctx.moveTo(145.500000, 626.900390);
       ctx.lineTo(124.099610, 688.199220);
       ctx.lineTo(133.099610, 688.300780);
@@ -266,7 +268,7 @@
       ctx.lineJoin = 'miter';
       ctx.lineCap = 'butt';
       ctx.lineWidth = 1.000000;
-      ctx.fillStyle = 'rgb(87, 87, 87)';
+      ctx.fillStyle = color;
       ctx.moveTo(283.100000, 629.399980);
       ctx.lineTo(280.900000, 636.199980);
       ctx.bezierCurveTo(280.900000, 636.199980, 274.402680, 633.299980, 266.800000, 633.299980);
@@ -289,7 +291,7 @@
       ctx.lineJoin = 'miter';
       ctx.lineCap = 'butt';
       ctx.lineWidth = 1.000000;
-      ctx.fillStyle = 'rgb(87, 87, 87)';
+      ctx.fillStyle = color;
       ctx.moveTo(348.100000, 688.299980);
       ctx.lineTo(348.100000, 626.899980);
       ctx.lineTo(357.500000, 626.899980);
@@ -307,7 +309,7 @@
       ctx.lineJoin = 'miter';
       ctx.lineCap = 'butt';
       ctx.lineWidth = 1.000000;
-      ctx.fillStyle = 'rgb(87, 87, 87)';
+      ctx.fillStyle = color;
       ctx.moveTo(461.000000, 626.899980);
       ctx.lineTo(495.400000, 626.899980);
       ctx.lineTo(495.400000, 634.199980);
@@ -327,7 +329,7 @@
       ctx.lineJoin = 'miter';
       ctx.lineCap = 'butt';
       ctx.lineWidth = 1.000000;
-      ctx.fillStyle = 'rgb(87, 87, 87)';
+      ctx.fillStyle = color;
       ctx.moveTo(550.900000, 626.899980);
       ctx.lineTo(598.400000, 626.899980);
       ctx.lineTo(598.400000, 634.299980);
