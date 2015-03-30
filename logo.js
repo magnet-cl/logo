@@ -45,7 +45,20 @@
     },
 
     animate: function() {
-      this.interval = setInterval(this.rotate.bind(this), 1000 / this.FPS);
+      var self = this;
+
+      this.interval = setInterval(function() {
+        self.clear();
+        self.rotate();
+        self.resize();
+      }, 1000 / this.FPS);
+    },
+
+    resize: function() {
+      this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+      var size = Math.sin(Date.now() / 1000) + 1;
+      console.log(size);
+      this.ctx.scale(size, size);
     },
 
     stop: function() {
@@ -76,8 +89,6 @@
 
       var width = this.canvas.width;
       var height = this.canvas.height;
-
-      this.clear();
 
       // Move registration point to the center of the canvas
       this.ctx.translate(width / 2, width / 2);

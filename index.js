@@ -3,13 +3,13 @@
 
   var logoMagnet = new LogoMagnet(document.getElementById('canvas'));
 
-  logoMagnet.renderBackground();
-  logoMagnet.renderManta();
-  logoMagnet.renderText();
+  logoMagnet.renderBackground('#00ff00');
+  logoMagnet.renderManta('#ff0000');
+  logoMagnet.renderText('#0000ff');
 
   logoMagnet.draw();
 
-  //logoMagnet.animate();
+  logoMagnet.animate();
 
   window.logoMagnet = logoMagnet;
 }());
