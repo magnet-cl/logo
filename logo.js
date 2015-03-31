@@ -4,61 +4,49 @@
   var LogoMagnet = Class.extend({
 
     init: function(el) {
-      var width = 600;
-      var height = 689;
+      var width = el.clientWidth;
+      var height = el.clientHeight;
+      console.log(el.clientHeight);
 
-      this.container = {};
-
-      this.container.canvas = el;
-      this.container.ctx = this.container.canvas.getContext('2d');
-
-      this.canvas = document.createElement('canvas');
+      this.canvas = el;
       this.canvas.width = width;
       this.canvas.height = height;
       this.ctx = this.canvas.getContext('2d');
 
       this.FPS = 40;
 
-      this.manta = {};
-
-      this.manta.canvas = document.createElement('canvas');
-      this.manta.canvas.width = width;
-      this.manta.canvas.height = height;
-      this.manta.ctx = this.manta.canvas.getContext('2d');
-
-      this.background = {};
-
-      this.background.canvas = document.createElement('canvas');
-      this.background.canvas.width = width;
-      this.background.canvas.height = height;
-      this.background.ctx = this.background.canvas.getContext('2d');
-
-      this.text = {};
-
-      this.text.canvas = document.createElement('canvas');
-      this.text.canvas.width = width;
-      this.text.canvas.height = height;
-      this.text.ctx = this.text.canvas.getContext('2d');
-
       this.currentAngle = 0;
       this.deltaAngle = Math.PI / 180;
+
+      this.ctx.translate(width / 4, 0);
     },
 
     animate: function() {
       var self = this;
 
       this.interval = setInterval(function() {
+        self.ctx.save();
         self.clear();
-        self.rotate();
         self.resize();
+        self.rotate();
+        self.draw();
+        self.ctx.restore();
+        self.ctx.setTransform(1, 0, 0, 1, 0, 0);
       }, 1000 / this.FPS);
     },
 
     resize: function() {
-      this.ctx.setTransform(1, 0, 0, 1, 0, 0);
       var size = Math.sin(Date.now() / 1000) + 1;
-      console.log(size);
       this.ctx.scale(size, size);
+      var auxColor;
+
+      if (size > 1.5) {
+        auxColor = this.backgroundColor;
+
+        this.backgroundColor = this.mantaColor;
+        this.mantaColor = this.textColor;
+        this.textColor = auxColor;
+      }
     },
 
     stop: function() {
@@ -66,32 +54,28 @@
     },
 
     clear: function() {
-      // Clear the canvas
-      this.container.ctx.clearRect(
-        0,
-        0,
-        this.container.canvas.width,
-        this.container.canvas.height
-      );
-
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     },
 
     draw: function() {
-      this.ctx.drawImage(this.background.canvas, 0, 0);
-      this.ctx.drawImage(this.manta.canvas, 0, 0);
-      this.ctx.drawImage(this.text.canvas, 0, 0);
-      this.container.ctx.drawImage(this.ctx.canvas, 0, 0);
+      if (this.backgroundColor) {
+        this.renderBackground();
+      }
+      if (this.mantaColor) {
+        this.renderManta();
+      }
+      if (this.renderText) {
+        this.renderText();
+      }
     },
 
     rotate: function() {
-      this.ctx.save();
 
       var width = this.canvas.width;
       var height = this.canvas.height;
 
       // Move registration point to the center of the canvas
-      this.ctx.translate(width / 2, width / 2);
+      this.ctx.translate(width / 2, height / 2);
 
       this.currentAngle += this.deltaAngle;
 
@@ -103,16 +87,15 @@
       this.ctx.rotate(this.currentAngle);
 
       // Move registration point back to the top left corner of canvas
-      this.ctx.translate(-width / 2, -width / 2);
-
-      this.draw();
-
-      this.ctx.restore();
+      this.ctx.translate(-width / 2, -height / 2);
     },
 
     renderBackground: function(color) {
-      var ctx = this.background.ctx;
-      color = color || 'rgb(40, 175, 206)';
+      var ctx = this.ctx;
+
+      if (!this.backgroundColor) {
+        this.backgroundColor = color || 'rgb(40, 175, 206)';
+      }
       // #layerBackground
 
       // #rectBackground
@@ -121,11 +104,9 @@
       ctx.lineCap = 'butt';
       ctx.miterLimit = 4;
       ctx.lineWidth = 3.000000;
-      ctx.fillStyle = color;
+      ctx.fillStyle = this.backgroundColor;
       ctx.rect(0.000000, 0.000000, 600.000000, 600.000000);
       ctx.fill();
-
-      this.ctx.drawImage(this.background.canvas, 0, 0);
     },
 
     renderManta: function(color) {
@@ -133,12 +114,14 @@
       this.renderRightEye();
       this.renderLeftEye();
       this.renderMantaGill();
-      this.ctx.drawImage(this.manta.canvas, 0, 0);
     },
 
     renderPerimeter: function(color) {
-      var ctx = this.manta.ctx;
-      color = color || 'rgb(40, 175, 206)';
+      var ctx = this.ctx;
+
+      if (!this.mantaColor) {
+        this.mantaColor = color || 'rgb(40, 175, 206)';
+      }
 
       // #layerManta
 
@@ -149,7 +132,7 @@
       ctx.lineCap = 'butt';
       ctx.miterLimit = 4;
       ctx.lineWidth = 3.000000;
-      ctx.fillStyle = color;
+      ctx.fillStyle = this.mantaColor;
       ctx.moveTo(73.977794, 282.246470);
       ctx.bezierCurveTo(73.883624, 257.774170, 126.304670, 235.789760, 167.909670, 213.081560);
       ctx.bezierCurveTo(210.484640, 190.947100, 263.150880, 157.254600, 269.623680, 148.155170);
@@ -177,7 +160,7 @@
       ctx.fill();
       ctx.stroke(); },
     renderRightEye: function() {
-      var ctx = this.manta.ctx;
+      var ctx = this.ctx;
 
       // #pathMataRightEye
       ctx.beginPath();
@@ -193,7 +176,7 @@
     },
 
     renderLeftEye: function() {
-      var ctx = this.manta.ctx;
+      var ctx = this.ctx;
 
       // #pathMantaLeftEye
       ctx.beginPath();
@@ -209,7 +192,7 @@
     },
 
     renderMantaGill: function() {
-      var ctx = this.manta.ctx;
+      var ctx = this.ctx;
 
       // #pathMantaGill
       ctx.beginPath();
@@ -226,9 +209,11 @@
     },
 
     renderText: function(color) {
-      var ctx = this.text.ctx;
+      var ctx = this.ctx;
 
-      color = color || 'rgb(87, 87, 87)';
+      if (!this.textColor) {
+        this.textColor = color || 'rgb(87, 87, 87)';
+      }
 
       // #layerText
 
@@ -237,7 +222,7 @@
       ctx.lineJoin = 'miter';
       ctx.lineCap = 'butt';
       ctx.lineWidth = 1.000000;
-      ctx.fillStyle = color;
+      ctx.fillStyle = this.textColor;
       ctx.moveTo(5.200000, 627.099980);
       ctx.lineTo(16.200000, 627.099980);
       ctx.lineTo(33.300000, 676.799980);
@@ -350,7 +335,6 @@
       ctx.lineTo(570.300000, 634.199980);
       ctx.lineTo(550.900000, 634.199980);
       ctx.fill();
-      this.ctx.drawImage(this.text.canvas, 0, 0);
     }
   });
 
