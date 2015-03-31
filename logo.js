@@ -48,6 +48,45 @@
     }
   };
 
+  LogoMagnet.prototype.fitContainer = function() {
+    var baseWidth;
+    var baseHeight;
+
+    var horizontalOffset = 73.977794;
+    var verticalOffset = 173.977794;
+
+    if (this.backgroundEnabled || this.textEnabled) {
+      baseWidth = 600;
+    } else {
+      baseWidth = 600 - horizontalOffset * 2;
+    }
+
+    if (this.textEnabled) {
+      baseHeight = 689;
+    } else if (this.backgroundEnabled) {
+      baseHeight = 600;
+    } else {
+      baseHeight = 450;
+    }
+
+    if (!this.backgroundEnabled && !this.textEnabled) {
+      this.ctx.translate(-horizontalOffset, -verticalOffset);
+    }
+
+    var newWidth = this.canvas.clientWidth / baseWidth;
+    var newHeight = this.canvas.clientHeight / baseHeight;
+
+    var newSize;
+
+    if (newWidth < newHeight) {
+      newSize = newWidth;
+    } else {
+      newSize = newHeight;
+    }
+
+    this.ctx.scale(newSize, newSize);
+  };
+
   LogoMagnet.prototype.stop = function() {
     clearInterval(this.interval);
   };
@@ -57,13 +96,18 @@
   };
 
   LogoMagnet.prototype.render = function(options) {
+    var k;
+    options = options || {};
+
     this.backgroundEnabled = true;
     this.mantaEnabled = true;
     this.textEnabled = true;
 
-    this.backgroundColor = options.backgroundColor || this.backgroundColor;
-    this.textColor = options.textColor || this.textColor;
-    this.mantaColor = options.mantaColor || this.mantaColor;
+    for (k in options) {
+      this[k] = options[k];
+    }
+
+    this.fitContainer();
 
     this.draw();
   };
