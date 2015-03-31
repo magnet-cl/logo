@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  var logoMagnet = new LogoMagnet(document.getElementById('canvas'));
+  var logoMagnet = new MagnetLogo(document.getElementById('canvas'));
 
   logoMagnet.render({
     backgroundColor: '#00ff00',
