@@ -18,6 +18,10 @@
     this.backgroundColor = 'rgb(40, 175, 206)';
     this.mantaColor = 'rgb(40, 175, 206)';
     this.textColor = 'rgb(87, 87, 87)';
+
+    this.textHeight = 688.299980 - 627.099980;
+
+    this.scale = 1;
   }
 
   LogoMagnet.prototype.animate = function() {
@@ -48,12 +52,20 @@
     }
   };
 
+  LogoMagnet.prototype.center = function() {
+    var newCanvasWidth = this.width / this.scale;
+    var offset = (newCanvasWidth - 600) / 2;
+
+    this.ctx.translate(offset, 0);
+  };
+
   LogoMagnet.prototype.fitContainer = function() {
     var baseWidth;
     var baseHeight;
 
     var horizontalOffset = 73.977794;
-    var verticalOffset = 173.977794;
+
+    var topOffset = 0;
 
     if (this.backgroundEnabled || this.textEnabled) {
       baseWidth = 600;
@@ -61,30 +73,29 @@
       baseWidth = 600 - horizontalOffset * 2;
     }
 
-    if (this.textEnabled) {
+    if (this.textEnabled && (this.backgroundEnabled || this.mantaEnabled)) {
       baseHeight = 689;
-    } else if (this.backgroundEnabled) {
+    } else if (!this.textEnabled) {
       baseHeight = 600;
     } else {
-      baseHeight = 450;
-    }
-
-    if (!this.backgroundEnabled && !this.textEnabled) {
-      this.ctx.translate(-horizontalOffset, -verticalOffset);
+      // te text has to be moved to the top
+      var topOffset = 627.099980;
+      baseHeight = this.textHeight;
     }
 
     var newWidth = this.canvas.clientWidth / baseWidth;
     var newHeight = this.canvas.clientHeight / baseHeight;
 
-    var newSize;
-
     if (newWidth < newHeight) {
-      newSize = newWidth;
+      this.scale = newWidth;
     } else {
-      newSize = newHeight;
+      this.scale = newHeight;
     }
 
-    this.ctx.scale(newSize, newSize);
+    // move to the top
+    this.ctx.translate(0, - (topOffset * this.scale));
+
+    this.ctx.scale(this.scale, this.scale);
   };
 
   LogoMagnet.prototype.stop = function() {
@@ -108,6 +119,7 @@
     }
 
     this.fitContainer();
+    this.center();
 
     this.draw();
   };
