@@ -14,6 +14,10 @@
 
     this.currentAngle = 0;
     this.deltaAngle = Math.PI / 180;
+
+    this.backgroundColor = 'rgb(40, 175, 206)';
+    this.mantaColor = 'rgb(40, 175, 206)';
+    this.textColor = 'rgb(87, 87, 87)';
   }
 
   LogoMagnet.prototype.animate = function() {
@@ -52,14 +56,26 @@
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   };
 
+  LogoMagnet.prototype.render = function(options) {
+    this.backgroundEnabled = true;
+    this.mantaEnabled = true;
+    this.textEnabled = true;
+
+    this.backgroundColor = options.backgroundColor || this.backgroundColor;
+    this.textColor = options.textColor || this.textColor;
+    this.mantaColor = options.mantaColor || this.mantaColor;
+
+    this.draw();
+  };
+
   LogoMagnet.prototype.draw = function() {
-    if (this.backgroundColor) {
+    if (this.backgroundEnabled) {
       this.renderBackground();
     }
-    if (this.mantaColor) {
+    if (this.mantaEnabled) {
       this.renderManta();
     }
-    if (this.renderText) {
+    if (this.textEnabled) {
       this.renderText();
     }
   };
@@ -87,11 +103,11 @@
 
   LogoMagnet.prototype.renderBackground = function(color) {
     var ctx = this.ctx;
+    this.backgroundEnabled = true;
 
-    if (!this.backgroundColor) {
-      this.backgroundColor = color || 'rgb(40, 175, 206)';
+    if (color) {
+      this.backgroundColor = color;
     }
-    // #layerBackground
 
     // #rectBackground
     ctx.beginPath();
@@ -105,6 +121,7 @@
   };
 
   LogoMagnet.prototype.renderManta = function(color) {
+    this.mantaEnabled = true;
     this.renderPerimeter(color);
     this.renderRightEye();
     this.renderLeftEye();
@@ -114,8 +131,8 @@
   LogoMagnet.prototype.renderPerimeter = function(color) {
     var ctx = this.ctx;
 
-    if (!this.mantaColor) {
-      this.mantaColor = color || 'rgb(40, 175, 206)';
+    if (color) {
+      this.mantaColor = color;
     }
 
     // #layerManta
@@ -208,8 +225,10 @@
   LogoMagnet.prototype.renderText = function(color) {
     var ctx = this.ctx;
 
-    if (!this.textColor) {
-      this.textColor = color || 'rgb(87, 87, 87)';
+    this.textEnabled = true;
+
+    if (color) {
+      this.textColor = color;
     }
 
     // #layerText

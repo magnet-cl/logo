@@ -3,11 +3,11 @@
 
   var logoMagnet = new LogoMagnet(document.getElementById('canvas'));
 
-  logoMagnet.renderBackground('#00ff00');
-  logoMagnet.renderManta('#ff0000');
-  logoMagnet.renderText('#0000ff');
-
-  logoMagnet.draw();
+  logoMagnet.render({
+    backgroundColor: '#00ff00',
+    mantaColor: '#ff0000',
+    textColor: '#0000ff'
+  });
 
   logoMagnet.animate();
 
