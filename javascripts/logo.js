@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  function LogoMagnet(el) {
+  function MagnetLogo(el) {
     this.width = el.clientWidth;
     this.height = el.clientHeight;
 
@@ -24,7 +24,7 @@
     this.scale = 1;
   }
 
-  LogoMagnet.prototype.animate = function() {
+  MagnetLogo.prototype.animate = function() {
     var self = this;
 
     this.interval = setInterval(function() {
@@ -38,7 +38,7 @@
     }, 1000 / this.FPS);
   };
 
-  LogoMagnet.prototype.resize = function() {
+  MagnetLogo.prototype.resize = function() {
     var size = Math.sin(Date.now() / 1000) + 1;
     this.ctx.scale(size, size);
     var auxColor;
@@ -52,14 +52,14 @@
     }
   };
 
-  LogoMagnet.prototype.center = function() {
+  MagnetLogo.prototype.center = function() {
     var newCanvasWidth = this.width / this.scale;
     var offset = (newCanvasWidth - 600) / 2;
 
     this.ctx.translate(offset, 0);
   };
 
-  LogoMagnet.prototype.fitContainer = function() {
+  MagnetLogo.prototype.fitContainer = function() {
     var baseWidth;
     var baseHeight;
 
@@ -98,15 +98,15 @@
     this.ctx.scale(this.scale, this.scale);
   };
 
-  LogoMagnet.prototype.stop = function() {
+  MagnetLogo.prototype.stop = function() {
     clearInterval(this.interval);
   };
 
-  LogoMagnet.prototype.clear = function() {
+  MagnetLogo.prototype.clear = function() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   };
 
-  LogoMagnet.prototype.render = function(options) {
+  MagnetLogo.prototype.render = function(options) {
     var k;
     options = options || {};
 
@@ -124,7 +124,7 @@
     this.draw();
   };
 
-  LogoMagnet.prototype.draw = function() {
+  MagnetLogo.prototype.draw = function() {
     if (this.backgroundEnabled) {
       this.renderBackground();
     }
@@ -136,7 +136,7 @@
     }
   };
 
-  LogoMagnet.prototype.rotate = function() {
+  MagnetLogo.prototype.rotate = function() {
 
     var width = this.canvas.width;
     var height = this.canvas.height;
@@ -157,7 +157,7 @@
     this.ctx.translate(-width / 2, -height / 2);
   };
 
-  LogoMagnet.prototype.renderBackground = function(color) {
+  MagnetLogo.prototype.renderBackground = function(color) {
     var ctx = this.ctx;
     this.backgroundEnabled = true;
 
@@ -176,7 +176,7 @@
     ctx.fill();
   };
 
-  LogoMagnet.prototype.renderManta = function(color) {
+  MagnetLogo.prototype.renderManta = function(color) {
     this.mantaEnabled = true;
     this.renderPerimeter(color);
     this.renderRightEye();
@@ -184,7 +184,7 @@
     this.renderMantaGill();
   };
 
-  LogoMagnet.prototype.renderPerimeter = function(color) {
+  MagnetLogo.prototype.renderPerimeter = function(color) {
     var ctx = this.ctx;
 
     if (color) {
@@ -229,7 +229,7 @@
     ctx.stroke();
   };
 
-  LogoMagnet.prototype.renderRightEye = function() {
+  MagnetLogo.prototype.renderRightEye = function() {
     var ctx = this.ctx;
 
     // #pathMataRightEye
@@ -245,7 +245,7 @@
     ctx.fill();
   };
 
-  LogoMagnet.prototype.renderLeftEye = function() {
+  MagnetLogo.prototype.renderLeftEye = function() {
     var ctx = this.ctx;
 
     // #pathMantaLeftEye
@@ -261,7 +261,7 @@
     ctx.fill();
   };
 
-  LogoMagnet.prototype.renderMantaGill = function() {
+  MagnetLogo.prototype.renderMantaGill = function() {
     var ctx = this.ctx;
 
     // #pathMantaGill
@@ -278,7 +278,7 @@
     ctx.fill();
   };
 
-  LogoMagnet.prototype.renderText = function(color) {
+  MagnetLogo.prototype.renderText = function(color) {
     var ctx = this.ctx;
 
     this.textEnabled = true;
@@ -409,5 +409,5 @@
     ctx.fill();
   };
 
-  window.LogoMagnet = LogoMagnet;
+  window.MagnetLogo = MagnetLogo;
 }());
