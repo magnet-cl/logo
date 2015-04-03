@@ -7,7 +7,14 @@
   * @param {HTMLCanvasElement} element Target canvas.
   */
   function MagnetLogo(element) {
-    this.ctx = element.getContext('2d');
+    if (element.tagName == 'CANVAS') {
+      this.canvas = element;
+    } else {
+      this.canvas = document.createElement('canvas');
+      element.appendChild(this.canvas);
+    }
+
+    this.ctx = this.canvas.getContext('2d');
 
     this.logoW = 600;
     this.logoH = 689;
@@ -19,7 +26,6 @@
 
     this.noiseRes = 200;
 
-    this.canvas = element;
     this.canvas.width = this.clientWidth;
     this.canvas.height = this.clientHeight;
 
