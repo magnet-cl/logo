@@ -36,25 +36,32 @@
     this.mantaColor = 'rgb(40, 175, 206)';
     this.textColor = 'rgb(87, 87, 87)';
 
-    this.scale = 1;
+    this.currentScale = 1;
 
-    this.scaledCanvasWidth = this.clientWidth / this.scale;
+    this.currentScaledCanvasWidth = this.clientWidth / this.currentScale;
+
+    this.updateFrameValues(0);
   }
 
   MagnetLogo.prototype.animate = function() {
+    this.animating = true;
     window.requestAnimationFrame(this.animationCallback.bind(this));
   };
 
-  MagnetLogo.prototype.animationCallback = function(time) {
+  MagnetLogo.prototype.animationCallback = function(timestamp) {
+    this.updateFrameValues(timestamp);
     this.ctx.save();
     this.clear();
-    this.resize();
-    this.rotate();
+    //this.resize();
+    //this.rotate();
+    this.fitContainer();
     this.draw();
     this.ctx.restore();
 
     // Request next frame
-    window.requestAnimationFrame(this.animationCallback.bind(this));
+    if (this.animating) {
+      window.requestAnimationFrame(this.animationCallback.bind(this));
+    }
   };
 
   MagnetLogo.prototype.swim = function() {
@@ -75,10 +82,19 @@
     }
   };
 
+  /**
+  * MagnetLogo.center - Aligns the logo with the canvas center.
+  */
   MagnetLogo.prototype.center = function() {
-    var offset = (this.scaledCanvasWidth - this.logoW) / 2;
+    var ox = (
+        this.clientWidth - this.currentScale * this.logoW) /
+      2 / this.currentScale;
 
-    this.ctx.translate(offset, 0);
+    var oy = (
+      this.clientHeight - this.currentScale * this.logoH) /
+      2 / this.currentScale;
+
+    this.ctx.translate(ox, oy);
   };
 
   MagnetLogo.prototype.fitContainer = function() {
@@ -109,21 +125,94 @@
     var newHeight = this.canvas.clientHeight / baseHeight;
 
     if (newWidth < newHeight) {
-      this.scale = newWidth;
+      this.currentScale = newWidth;
     } else {
-      this.scale = newHeight;
+      this.currentScale = newHeight;
     }
 
     // move to the top
-    this.ctx.translate(0, - (topOffset * this.scale));
+    this.ctx.translate(0, - (topOffset * this.currentScale));
 
-    this.ctx.scale(this.scale, this.scale);
+    this.ctx.scale(this.currentScale, this.currentScale);
 
-    this.scaledCanvasWidth = this.clientWidth / this.scale;
+    this.currentScaledCanvasWidth = this.clientWidth / this.currentScale;
+  };
+
+  /**
+  * Renders a frame and automatically subscribes to the next.
+  * @param  {DOMHighResTimeStamp} timestamp
+  */
+  MagnetLogo.prototype.renderFrame = function(timestamp) {
+    this.checkResize();
+
+    this.clear();
+
+    this.setcurrentScale();
+    this.center();
+
+    this.updateFrameValues(timestamp);
+
+    this.drawBackground();
+    this.drawManta();
+    this.drawText();
+
+    // Request next frame
+    if (this.animating) {
+      window.requestAnimationFrame(window.animationCallback);
+    }
+  };
+
+  /**
+  * Updates the frame values for a given timestamp
+  */
+  MagnetLogo.prototype.updateFrameValues = function(timestamp) {
+    var lambda = (timestamp % 2000) / 2000;
+
+    // Animation time
+    var sinTime = (Math.sin(2 * Math.PI * lambda) + 1) / 2;
+    this.cosTime = (Math.cos(2 * Math.PI * lambda) + 1) / 2;
+    this.triTime = Math.abs(lambda - 0.5);
+
+    // Animation coords
+    this.centerX = (this.logoW + 20) / 2;
+    this.flipFactor = (1 - 0.1 * sinTime);
+    this.horizontalFactor = (0.7 + 0.3 * sinTime);
+  };
+
+  /**
+  * for a given x coord, obtain the translated coord
+  */
+  MagnetLogo.prototype.leftTransform = function(x) {
+    var toCenter = this.centerX - x;
+    var distanceFactor = toCenter / this.centerX;
+
+    var horizontalFactor = 1 - ((1 - this.horizontalFactor) * distanceFactor);
+
+    return this.centerX - (horizontalFactor * toCenter);
+  };
+
+  /**
+  * for a given x coord, obtain the translated coord
+  */
+  MagnetLogo.prototype.rightTransform = function(x) {
+    var fromCenter = x - this.centerX;
+    var distanceFactor = fromCenter / this.centerX;
+
+    var horizontalFactor = 1 - ((1 - this.horizontalFactor) * distanceFactor);
+    return this.centerX + (horizontalFactor * fromCenter);
+  };
+
+  /**
+  * for a given x coord, obtain the flip translated coord
+  */
+  MagnetLogo.prototype.flipTransform = function(x) {
+    var distance = x - this.centerX;
+    distance = this.flipFactor * distance;
+    return this.centerX + distance;
   };
 
   MagnetLogo.prototype.stop = function() {
-    clearInterval(this.interval);
+    this.animating = false;
   };
 
   /**
@@ -154,13 +243,13 @@
 
   MagnetLogo.prototype.draw = function() {
     if (this.backgroundEnabled) {
-      this.renderBackground();
+      this.drawBackground();
     }
     if (this.mantaEnabled) {
-      this.renderManta();
+      this.drawManta();
     }
     if (this.textEnabled) {
-      this.renderText();
+      this.drawText();
     }
   };
 
@@ -188,7 +277,7 @@
   /**
   * Draws a moving background.
   */
-  MagnetLogo.prototype.renderBackground = function(color) {
+  MagnetLogo.prototype.drawBackground = function(color) {
     var ctx = this.ctx;
     this.backgroundEnabled = true;
 
@@ -207,15 +296,19 @@
     ctx.fill();
   };
 
-  MagnetLogo.prototype.renderManta = function(color) {
+  MagnetLogo.prototype.drawManta = function(color) {
     this.mantaEnabled = true;
-    this.renderPerimeter(color);
-    this.renderRightEye();
-    this.renderLeftEye();
-    this.renderMantaGill();
+
+    this.drawPerimeter(color);
+    this.drawRightEye();
+    this.drawLeftEye();
+    this.drawMantaGill();
+
+    // Global movement correction
+    this.ctx.translate(0, 30 * this.cosTime);
   };
 
-  MagnetLogo.prototype.renderPerimeter = function(color) {
+  MagnetLogo.prototype.drawPerimeter = function(color) {
     var ctx = this.ctx;
 
     if (color) {
@@ -232,127 +325,124 @@
     ctx.miterLimit = 4;
     ctx.lineWidth = 3.000000;
     ctx.fillStyle = this.mantaColor;
-    ctx.moveTo(73.977794, 282.246470);
-    ctx.bezierCurveTo(
-      73.883624, 257.774170,
-      126.304670, 235.789760,
-      167.909670, 213.081560
-    );
-    ctx.bezierCurveTo(
-      210.484640, 190.947100,
-      263.150880, 157.254600,
-      269.623680, 148.155170
-    );
-    ctx.bezierCurveTo(
+
+    // Global movement
+    this.ctx.translate(0, - 30 * this.cosTime);
+
+    // Left wing
+    this.ctx.moveTo(this.leftTransform(73.977794), 282.246470);
+    this.ctx.bezierCurveTo(
+      this.leftTransform(73.883624), 257.774170,
+      this.leftTransform(126.304670), 235.789760,
+      this.leftTransform(167.909670), 213.081560);
+    this.ctx.bezierCurveTo(
+      this.leftTransform(210.484640), 190.947100,
+      this.leftTransform(263.150880), 157.254600,
+      this.leftTransform(269.623680), 148.155170);
+
+    // Head
+    this.ctx.bezierCurveTo(
       275.191880, 140.327420,
       269.839980, 133.310800,
       276.059650, 127.506190
     );
-    ctx.bezierCurveTo(
+    this.ctx.bezierCurveTo(
       286.595280, 117.673640,
       309.903650, 127.080550,
       309.903650, 127.080550
     );
-    ctx.bezierCurveTo(
+    this.ctx.bezierCurveTo(
       329.383360, 120.770220,
       336.119160, 122.161820,
       344.073280, 127.680550
     );
-    ctx.bezierCurveTo(
+    this.ctx.bezierCurveTo(
       350.299990, 132.000770,
       344.896370, 139.256320,
-      350.414360, 148.467920
+      this.rightTransform(350.414360), 148.467920
     );
-    ctx.bezierCurveTo(
-      353.756740, 154.047600,
-      384.724500, 174.504720,
-      411.774040, 190.786410
-    );
-    ctx.bezierCurveTo(
-      442.391090, 209.215460,
-      501.558930, 237.365520,
-      523.480400, 252.805020
-    );
-    ctx.bezierCurveTo(
-      529.622190, 257.130740,
-      546.508970, 268.007830,
-      546.180780, 282.695200
-    );
-    ctx.bezierCurveTo(
-      525.054890, 282.146470,
-      501.006500, 280.786330,
-      481.938570, 289.908330
-    );
-    ctx.bezierCurveTo(
-      434.929310, 312.397310,
-      410.960720, 336.764950,
-      394.599010, 349.718160
-    );
-    ctx.bezierCurveTo(
-      380.442620, 360.925470,
-      336.504020, 402.897790,
-      319.965380, 411.704360
-    );
-    ctx.bezierCurveTo(
-      315.274030, 460.083760,
-      277.985540, 490.298510,
-      219.356590, 490.313020
-    );
-    ctx.bezierCurveTo(
-      164.705390, 490.326520,
-      106.655900, 472.630580,
-      84.580471, 433.491850
-    );
-    ctx.bezierCurveTo(
-      72.602628, 412.255680,
-      69.306950, 383.452180,
-      80.690676, 364.029490
-    );
-    ctx.bezierCurveTo(
-      90.442479, 347.391150,
-      106.636980, 344.334470,
-      116.447430, 344.324140
-    );
-    ctx.bezierCurveTo(
-      98.060061, 345.801180,
-      86.567091, 361.601140,
-      84.770140, 364.937400
-    );
-    ctx.bezierCurveTo(
-      68.768427, 394.646550,
-      82.181973, 426.775320,
-      97.898581, 443.943260
-    );
-    ctx.bezierCurveTo(
-      116.813410, 464.604760,
-      155.320920, 483.254050,
-      217.471650, 483.228330
-    );
-    ctx.bezierCurveTo(
-      295.609590, 483.196030,
+
+    // this.rightTransform wing
+    this.ctx.bezierCurveTo(
+      this.rightTransform(353.756740), 154.047600,
+      this.rightTransform(384.724500), 174.504720,
+      this.rightTransform(411.774040), 190.786410);
+    this.ctx.bezierCurveTo(
+      this.rightTransform(442.391090), 209.215460,
+      this.rightTransform(501.558930), 237.365520,
+      this.rightTransform(523.480400), 252.805020);
+    this.ctx.bezierCurveTo(
+      this.rightTransform(529.622190), 257.130740,
+      this.rightTransform(546.508970), 268.007830,
+      this.rightTransform(546.180780), 282.695200);
+    this.ctx.bezierCurveTo(
+      this.rightTransform(525.054890), 282.146470,
+      this.rightTransform(501.006500), 280.786330,
+      this.rightTransform(481.938570), 289.908330);
+    this.ctx.bezierCurveTo(
+      this.rightTransform(434.929310), 312.397310,
+      this.rightTransform(410.960720), 336.764950,
+      this.rightTransform(394.599010), 349.718160);
+
+    // Tail
+    this.ctx.bezierCurveTo(
+      this.rightTransform(380.442620), 360.925470,
+      this.rightTransform(336.504020), 402.897790,
+      this.rightTransform(319.965380), 411.704360);
+
+    this.ctx.bezierCurveTo(
+      this.flipTransform(315.274030), 460.083760,
+      this.flipTransform(277.985540), 490.298510,
+      this.flipTransform(219.356590), 490.313020);
+    this.ctx.bezierCurveTo(
+      this.flipTransform(164.705390), 490.326520,
+      this.flipTransform(106.655900), 472.630580,
+      this.flipTransform(84.580471), 433.491850);
+    this.ctx.bezierCurveTo(
+      this.flipTransform(72.602628), 412.255680,
+      this.flipTransform(69.306950), 383.452180,
+      this.flipTransform(80.690676), 364.029490);
+    this.ctx.bezierCurveTo(
+      this.flipTransform(90.442479), 347.391150,
+      this.flipTransform(105.261980), 344.896970,
+      this.flipTransform(113.634930), 344.636640);
+    this.ctx.bezierCurveTo(
+      this.flipTransform(94.247561), 349.988680,
+      this.flipTransform(86.284044), 362.681030,
+      this.flipTransform(84.895140), 364.999900);
+    this.ctx.bezierCurveTo(
+      this.flipTransform(68.736161), 391.978430,
+      this.flipTransform(81.820690), 427.131040,
+      this.flipTransform(97.898581), 443.943260);
+    this.ctx.bezierCurveTo(
+      this.flipTransform(118.874950), 465.877680,
+      this.flipTransform(155.320920), 483.254050,
+      this.flipTransform(217.471650), 483.228330);
+    this.ctx.bezierCurveTo(
+      this.flipTransform(295.609590), 483.196030,
       302.747630, 434.598940,
-      301.575330, 411.122340
-    );
-    ctx.bezierCurveTo(
-      289.352120, 408.535100,
-      268.100100, 385.143590,
-      218.117950, 343.677970
-    );
-    ctx.bezierCurveTo(
-      198.001420, 326.989120,
-      154.068400, 293.230440,
-      126.355340, 286.487540
-    );
-    ctx.bezierCurveTo(
-      106.983590, 281.774170,
-      88.442594, 282.034780,
-      73.977794, 282.246470
-    );
-    ctx.fill();
-    ctx.stroke();
+      301.575330, 411.122340);
+
+
+    // this.leftTransform wing
+    this.ctx.bezierCurveTo(
+      this.leftTransform(289.352120), 408.535100,
+      this.leftTransform(268.100100), 385.143590,
+      this.leftTransform(218.117950), 343.677970);
+    this.ctx.bezierCurveTo(
+      this.leftTransform(198.001420), 326.989120,
+      this.leftTransform(154.068400), 293.230440,
+      this.leftTransform(126.355340), 286.487540);
+    this.ctx.bezierCurveTo(
+      this.leftTransform(106.983590), 281.774170,
+      this.leftTransform(88.442594), 282.034780,
+      this.leftTransform(73.977794), 282.246470);
+
+    this.ctx.fill();
+    this.ctx.stroke();
   };
 
-  MagnetLogo.prototype.renderRightEye = function() {
+  MagnetLogo.prototype.drawRightEye = function() {
     var ctx = this.ctx;
 
     // #pathMataRightEye
@@ -361,26 +451,27 @@
     ctx.lineCap = 'butt';
     ctx.lineWidth = 1.000000;
     ctx.fillStyle = 'rgb(255, 255, 255)';
-    ctx.moveTo(338.300000, 149.099980);
+
+    ctx.moveTo(this.rightTransform(338.300000), 149.099980);
     ctx.bezierCurveTo(
-      345.250000, 163.849980,
-      342.600000, 168.199980,
-      343.100000, 170.199980
+      this.rightTransform(345.250000), 163.849980,
+      this.rightTransform(342.600000), 168.199980,
+      this.rightTransform(343.100000), 170.199980
     );
     ctx.bezierCurveTo(
-      343.600000, 172.199980,
-      345.527290, 171.473970,
-      346.350000, 170.749980
+      this.rightTransform(343.600000), 172.199980,
+      this.rightTransform(345.527290), 171.473970,
+      this.rightTransform(346.350000), 170.749980
     );
     ctx.bezierCurveTo(
-      347.766970, 169.503030,
-      357.100000, 158.749980,
-      338.300000, 149.099980
+      this.rightTransform(347.766970), 169.503030,
+      this.rightTransform(357.100000), 158.749980,
+      this.rightTransform(338.300000), 149.099980
     );
     ctx.fill();
   };
 
-  MagnetLogo.prototype.renderLeftEye = function() {
+  MagnetLogo.prototype.drawLeftEye = function() {
     var ctx = this.ctx;
 
     // #pathMantaLeftEye
@@ -389,29 +480,29 @@
     ctx.lineCap = 'butt';
     ctx.lineWidth = 1.000000;
     ctx.fillStyle = 'rgb(255, 255, 255)';
-    ctx.moveTo(282.106930, 149.151200);
+
+    ctx.moveTo(this.leftTransform(282.106930), 149.151200);
     ctx.bezierCurveTo(
-      275.156930, 163.901200,
-      277.806930, 168.251200,
-      277.306930, 170.251200
+      this.leftTransform(275.156930), 163.901200,
+      this.leftTransform(277.806930), 168.251200,
+      this.leftTransform(277.306930), 170.251200
     );
     ctx.bezierCurveTo(
-      276.806930, 172.251200,
-      274.879640, 171.525190,
-      274.056930, 170.801200
+      this.leftTransform(276.806930), 172.251200,
+      this.leftTransform(274.879640), 171.525190,
+      this.leftTransform(274.056930), 170.801200
     );
     ctx.bezierCurveTo(
-      272.639960, 169.554250,
-      263.306930, 158.801200,
-      282.106930, 149.151200
+      this.leftTransform(272.639960), 169.554250,
+      this.leftTransform(263.306930), 158.801200,
+      this.leftTransform(282.106930), 149.151200
     );
     ctx.fill();
   };
 
-  MagnetLogo.prototype.renderMantaGill = function() {
+  MagnetLogo.prototype.drawMantaGill = function() {
     var ctx = this.ctx;
 
-    // #pathMantaGill
     ctx.beginPath();
     ctx.lineJoin = 'miter';
     ctx.lineCap = 'butt';
@@ -442,9 +533,9 @@
   };
 
   /**
-  * MagnetLogo.renderText - Draws the "MAGNET" text.
+  * MagnetLogo.drawText - Draws the "MAGNET" text.
   */
-  MagnetLogo.prototype.renderText = function(color) {
+  MagnetLogo.prototype.drawText = function(color) {
     var ctx = this.ctx;
 
     this.textEnabled = true;

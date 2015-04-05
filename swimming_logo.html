@@ -134,24 +134,27 @@ MagnetLogo.prototype.drawManta = function(lambda) {
 
   // Animation coords
   var w = this.logoW + 20;
-  var h = this.logoH;
+  var center = w / 2;
+  var flipFactor = (1 - 0.1 * sinTime);
 
+  var horizontalFactor = (0.7 + 0.3 * sinTime);
+
+  // for a given x coord, obtain the translated coord
   var left = function(x){
-    var center = w / 2;
     var toCenter = center - x;
-    toCenter = (0.7 + 0.3 * sinTime) * toCenter;
+    toCenter = horizontalFactor * toCenter;
     return center - toCenter;
   };
+
   var right = function(x){
-    var center = w / 2;
     var fromCenter = x - center;
-    fromCenter = (0.7 + 0.3 * sinTime) * fromCenter;
+    fromCenter = horizontalFactor * fromCenter;
     return center + fromCenter;
   };
+
   var flip = function(x){
-    var center = w / 2;
     var distance = x - center;
-    distance = (1 - 0.1 * sinTime) * distance;
+    distance = flipFactor * distance;
     return center + distance;
   }
   // Global movement
