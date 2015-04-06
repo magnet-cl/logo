@@ -30,11 +30,11 @@
     this.canvas.height = this.clientHeight;
 
     this.currentAngle = 0;
-    this.deltaAngle = Math.PI / 180;
 
     this.backgroundColor = 'rgb(40, 175, 206)';
     this.mantaColor = 'rgb(40, 175, 206)';
     this.textColor = 'rgb(87, 87, 87)';
+    this.borderColor = 'rgb(255, 255, 255)';
 
     this.currentScale = 1;
 
@@ -45,6 +45,7 @@
 
   MagnetLogo.prototype.animate = function() {
     this.animating = true;
+    this.noiseInit();
     window.requestAnimationFrame(this.animationCallback.bind(this));
   };
 
@@ -52,10 +53,23 @@
     this.updateFrameValues(timestamp);
     this.ctx.save();
     this.clear();
-    //this.resize();
-    //this.rotate();
     this.fitContainer();
-    this.draw();
+
+    if (this.backgroundEnabled) {
+      this.drawBackground();
+    }
+
+    if (this.textEnabled) {
+      this.drawText();
+    }
+
+    //this.resize();
+    this.swim();
+
+    if (this.mantaEnabled) {
+      this.drawManta();
+    }
+
     this.ctx.restore();
 
     // Request next frame
@@ -64,34 +78,23 @@
     }
   };
 
-  MagnetLogo.prototype.swim = function() {
-    this.noiseInit();
-  };
-
   MagnetLogo.prototype.resize = function() {
-    var size = Math.sin(Date.now() / 1000) + 1;
-    this.ctx.scale(size, size);
+    this.ctx.scale(0.5, 0.5);
     var auxColor;
-
-    if (size > 1.5) {
-      auxColor = this.backgroundColor;
-
-      this.backgroundColor = this.mantaColor;
-      this.mantaColor = this.textColor;
-      this.textColor = auxColor;
-    }
   };
 
   /**
   * MagnetLogo.center - Aligns the logo with the canvas center.
   */
   MagnetLogo.prototype.center = function() {
+    var oy;
+
     var ox = (
         this.clientWidth - this.currentScale * this.logoW) /
       2 / this.currentScale;
 
-    var oy = (
-      this.clientHeight - this.currentScale * this.logoH) /
+    oy = (
+      this.clientHeight - this.currentScale * this.currentHeight) /
       2 / this.currentScale;
 
     this.ctx.translate(ox, oy);
@@ -168,14 +171,19 @@
   MagnetLogo.prototype.updateFrameValues = function(timestamp) {
     var lambda = (timestamp % 2000) / 2000;
 
+    this.slowLambda = (timestamp % 20000) / 20000;
+    this.lambda = lambda;
+
     // Animation time
-    var sinTime = (Math.sin(2 * Math.PI * lambda) + 1) / 2;
-    this.cosTime = (Math.cos(2 * Math.PI * lambda) + 1) / 2;
+    this.angle = 2 * Math.PI * lambda;
+
+    var sinTime = (Math.sin(this.angle) + 1) / 2;
+    this.cosTime = (Math.cos(this.angle) + 1) / 2;
     this.triTime = Math.abs(lambda - 0.5);
 
     // Animation coords
     this.centerX = (this.logoW + 20) / 2;
-    this.flipFactor = (1 - 0.1 * sinTime);
+    this.flipFactor = (1 - 0.3 * sinTime);
     this.horizontalFactor = (0.7 + 0.3 * sinTime);
   };
 
@@ -211,6 +219,13 @@
     return this.centerX + distance;
   };
 
+  /**
+  * for a given y coord, tip of the tail
+  */
+  MagnetLogo.prototype.tailY = function(y) {
+    return (this.flipFactor - 0.7) * 50 + y;
+  };
+
   MagnetLogo.prototype.stop = function() {
     this.animating = false;
   };
@@ -225,6 +240,7 @@
 
   MagnetLogo.prototype.render = function(options) {
     var k;
+
     options = options || {};
 
     this.backgroundEnabled = true;
@@ -233,6 +249,14 @@
 
     for (k in options) {
       this[k] = options[k];
+    }
+
+    if (this.textEnabled && (this.backgroundEnabled || this.mantaEnabled)) {
+      this.currentHeight = this.logoH;
+    } else if (!this.textEnabled) {
+      this.currentHeight = this.backgroundHeight;
+    } else {
+      this.currentHeight = this.textHeight;
     }
 
     this.fitContainer();
@@ -253,25 +277,24 @@
     }
   };
 
-  MagnetLogo.prototype.rotate = function() {
+  MagnetLogo.prototype.swim = function() {
+    var height = this.currentHeight * (0.9 - 1.7 * this.slowLambda);
 
-    var width = this.logoW;
-    var height = this.logoH;
-
-    // Move registration point to the center of the canvas
-    this.ctx.translate(width / 2, height / 2);
-
-    this.currentAngle += this.deltaAngle;
-
-    if (this.currentAngle > 2 * Math.PI) {
-      this.currentAngle -= 2 * Math.PI;
+    if (!this.stop && height > 0) {
+      this.stop = true;
     }
 
-    // Rotate 1 degree
-    this.ctx.rotate(this.currentAngle);
+    if (this.stop && height < 0) {
+      this.stop = false;
+    }
 
-    // Move registration point back to the top left corner of canvas
-    this.ctx.translate(-width / 2, -height / 2);
+    console.log(height);
+
+    if (this.stop) {
+      return;
+    }
+
+    this.ctx.translate(0, height);
   };
 
   /**
@@ -285,8 +308,16 @@
       this.backgroundColor = color;
     }
 
+    if (this.noiseEnabled) {
+      this.moveNoise();
+      this.ctx.drawImage(
+        this.noiseCtx.canvas, 0, 0, this.noiseRes, this.noiseRes,
+        0, 0, this.logoW - 1, this.backgroundHeight - 1);
+    }
+
     // #rectBackground
     ctx.beginPath();
+    ctx.globalAlpha = 0.97;
     ctx.lineJoin = 'miter';
     ctx.lineCap = 'butt';
     ctx.miterLimit = 4;
@@ -294,12 +325,65 @@
     ctx.fillStyle = this.backgroundColor;
     ctx.rect(0.000000, 0.000000, this.logoW, this.backgroundHeight);
     ctx.fill();
+    ctx.globalAlpha = 1;
   };
 
-  MagnetLogo.prototype.drawManta = function(color) {
+  /**
+  * Creates a small canvas filled with noise.
+  */
+  MagnetLogo.prototype.noiseInit = function() {
+    var noiseCanvas = document.createElement('canvas');
+
+    this.noiseEnabled = true;
+    noiseCanvas.width = this.noiseRes;
+    noiseCanvas.height = this.noiseRes;
+    this.noiseCtx = noiseCanvas.getContext('2d');
+
+    var w = this.noiseCtx.canvas.width,
+        h = this.noiseCtx.canvas.height,
+        idata = this.noiseCtx.createImageData(w, h),
+        buffer32 = new Uint32Array(idata.data.buffer),
+        len = buffer32.length;
+
+    for (var i = 0; i < len; ++i) {
+      if (Math.random() < 0.5) buffer32[i] = 0xff000000;
+    }
+
+    this.noiseCtx.putImageData(idata, 0, 0);
+  };
+
+  /**
+  * Moves the noise canvas one pixel down.
+  */
+  MagnetLogo.prototype.moveNoise = function() {
+    var w = this.noiseCtx.canvas.width,
+        h = this.noiseCtx.canvas.height,
+        idata = this.noiseCtx.getImageData(0, 0, w, h),
+        buffer32 = new Uint32Array(idata.data.buffer),
+        len = buffer32.length,
+        firstRow = [];
+
+    var rowWidth = w;
+
+    for (var i = len - 1; i > rowWidth; --i) {
+      buffer32[i] = buffer32[i - rowWidth];
+    }
+
+    for (var i = 0; i < rowWidth; ++i) {
+      if (Math.random() < 0.5) {
+        buffer32[i] = 0xff000000;
+      } else {
+        buffer32[i] = 0x00000000;
+      }
+    }
+
+    this.noiseCtx.putImageData(idata, 0, 0);
+  };
+
+  MagnetLogo.prototype.drawManta = function() {
     this.mantaEnabled = true;
 
-    this.drawPerimeter(color);
+    this.drawPerimeter();
     this.drawRightEye();
     this.drawLeftEye();
     this.drawMantaGill();
@@ -308,8 +392,12 @@
     this.ctx.translate(0, 30 * this.cosTime);
   };
 
-  MagnetLogo.prototype.drawPerimeter = function(color) {
+  MagnetLogo.prototype.drawPerimeter = function(color, borderColor) {
     var ctx = this.ctx;
+
+    if (borderColor) {
+      this.borderColor = borderColor;
+    }
 
     if (color) {
       this.mantaColor = color;
@@ -320,7 +408,7 @@
     // #pathMantaPerimeter
     ctx.beginPath();
     ctx.lineJoin = 'miter';
-    ctx.strokeStyle = 'rgb(255, 255, 255)';
+    ctx.strokeStyle = this.borderColor;
     ctx.lineCap = 'butt';
     ctx.miterLimit = 4;
     ctx.lineWidth = 3.000000;
@@ -388,40 +476,46 @@
     this.ctx.bezierCurveTo(
       this.rightTransform(380.442620), 360.925470,
       this.rightTransform(336.504020), 402.897790,
-      this.rightTransform(319.965380), 411.704360);
+      this.rightTransform(319.965380), this.tailY(411.704360));
 
     this.ctx.bezierCurveTo(
-      this.flipTransform(315.274030), 460.083760,
-      this.flipTransform(277.985540), 490.298510,
-      this.flipTransform(219.356590), 490.313020);
+      this.flipTransform(315.274030), this.tailY(460.083760),
+      this.flipTransform(277.985540), this.tailY(490.298510),
+      this.flipTransform(219.356590), this.tailY(490.313020));
+
     this.ctx.bezierCurveTo(
-      this.flipTransform(164.705390), 490.326520,
-      this.flipTransform(106.655900), 472.630580,
-      this.flipTransform(84.580471), 433.491850);
+      this.flipTransform(164.705390), this.tailY(490.326520),
+      this.flipTransform(106.655900), this.tailY(472.630580),
+      this.flipTransform(84.580471), this.tailY(433.491850));
+
     this.ctx.bezierCurveTo(
-      this.flipTransform(72.602628), 412.255680,
-      this.flipTransform(69.306950), 383.452180,
-      this.flipTransform(80.690676), 364.029490);
+      this.flipTransform(72.602628), this.tailY(412.255680),
+      this.flipTransform(69.306950), this.tailY(383.452180),
+      this.flipTransform(80.690676), this.tailY(364.029490));
+
     this.ctx.bezierCurveTo(
-      this.flipTransform(90.442479), 347.391150,
-      this.flipTransform(105.261980), 344.896970,
-      this.flipTransform(113.634930), 344.636640);
+      this.flipTransform(90.442479), this.tailY(347.391150),
+      this.flipTransform(105.261980), this.tailY(344.896970),
+      this.flipTransform(113.634930), this.tailY(344.636640));
+
     this.ctx.bezierCurveTo(
-      this.flipTransform(94.247561), 349.988680,
-      this.flipTransform(86.284044), 362.681030,
-      this.flipTransform(84.895140), 364.999900);
+      this.flipTransform(94.247561), this.tailY(349.988680),
+      this.flipTransform(86.284044), this.tailY(362.681030),
+      this.flipTransform(84.895140), this.tailY(364.999900));
     this.ctx.bezierCurveTo(
-      this.flipTransform(68.736161), 391.978430,
-      this.flipTransform(81.820690), 427.131040,
-      this.flipTransform(97.898581), 443.943260);
+      this.flipTransform(68.736161), this.tailY(391.978430),
+      this.flipTransform(81.820690), this.tailY(427.131040),
+      this.flipTransform(97.898581), this.tailY(443.943260));
+
     this.ctx.bezierCurveTo(
-      this.flipTransform(118.874950), 465.877680,
-      this.flipTransform(155.320920), 483.254050,
-      this.flipTransform(217.471650), 483.228330);
+      this.flipTransform(118.874950), this.tailY(465.877680),
+      this.flipTransform(155.320920), this.tailY(483.254050),
+      this.flipTransform(217.471650), this.tailY(483.228330));
+
     this.ctx.bezierCurveTo(
-      this.flipTransform(295.609590), 483.196030,
-      302.747630, 434.598940,
-      301.575330, 411.122340);
+      this.flipTransform(295.609590), this.tailY(483.196030),
+      this.flipTransform(302.747630), this.tailY(434.598940),
+      this.flipTransform(301.575330), this.tailY(411.122340));
 
 
     // this.leftTransform wing

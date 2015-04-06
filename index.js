@@ -27,7 +27,8 @@
   logoAnimated.render({
     backgroundColor: '#00ff00',
     mantaColor: '#ff0000',
-    textColor: '#0000ff'
+    textColor: '#0000ff',
+    borderColor: '#ffff00'
   });
   logoAnimated.animate();
 }());
