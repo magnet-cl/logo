@@ -281,15 +281,14 @@
   MagnetLogo.prototype.swim = function() {
     var height = this.currentHeight * (0.9 - 1.7 * this.slowLambda);
 
-    if (!this.stop && height > 0) {
-      this.stop = true;
+    if (height > 0) {
+      this.reset = true;
     }
 
-    if (this.stop && height < 0) {
-      this.stop = false;
+    if (this.reset && height < 0) {
+      this.stop = !this.stop;
+      this.reset = false;
     }
-
-    console.log(height);
 
     if (this.stop) {
       return;
