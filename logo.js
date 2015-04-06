@@ -54,6 +54,7 @@
     this.ctx.save();
     this.clear();
     this.fitContainer();
+    this.center();
 
     if (this.backgroundEnabled) {
       this.drawBackground();
