@@ -4,9 +4,13 @@
   /**
   * Magnet logo class constructor.
   * @constructor
-  * @param {HTMLCanvasElement} element Target canvas.
+  * @param {HTMLCanvasElement or HTMLElement} element Target canvas or the
+  * element where to put a Canvas.
   */
-  function MagnetLogo(element) {
+  function MagnetLogo(element, options) {
+
+    // check if the element is a canvas. If not, create a new canvas and
+    // place it inside the given element
     if (element.tagName == 'CANVAS') {
       this.canvas = element;
     } else {
@@ -14,74 +18,151 @@
       element.appendChild(this.canvas);
     }
 
+    this.setup(element, options);
+  }
+
+  /**
+  * MagnetLogo.setup - Sets the values used to draw a the Magnet logo
+  */
+  MagnetLogo.prototype.setup = function(element, options) {
+    // set values not stablished by options
+    this.logoWidth = 600;
+    this.fullHeight = 689;
+    this.logoBackgroundHeight = 600;
+    this.textHeight = 61;
+
     this.ctx = this.canvas.getContext('2d');
 
-    this.logoW = 600;
-    this.logoH = 689;
-    this.backgroundHeight = 600;
-    this.textHeight = 688.299980 - 627.099980;
+    this.noiseResolution = 200;
 
-    this.clientWidth = element.clientWidth;
-    this.clientHeight = element.clientHeight;
+    this.setDefaults(element);
+    this.setOptions(options);
 
-    this.noiseRes = 200;
+    this.updateFrameValues(0);
+  };
 
-    this.canvas.width = this.clientWidth;
-    this.canvas.height = this.clientHeight;
+  /**
+  * MagnetLogo.optionSetup - Loads an object with options.
+  * @param {Object} options - The options object.
+  */
+  MagnetLogo.prototype.setOptions = function(options) {
+    var i;
 
-    this.currentAngle = 0;
+    // Force options to be an object
+    options = options || {};
 
+    // set all the attributes
+    for (i in options) {
+      this[i] = options[i];
+    }
+
+    this.canvas.height = this.height;
+    this.canvas.width = this.width;
+
+    if (this.textEnabled && (this.backgroundEnabled || this.mantaEnabled)) {
+      this.logoHeight = this.fullHeight;
+    } else if (!this.textEnabled) {
+      this.logoHeight = this.logoBackgroundHeight;
+    } else {
+      this.logoHeight = this.textHeight;
+    }
+  };
+
+  /**
+  * MagnetLogo.setDefaults - Set the default draw values for the logo.
+  * @param {Object} options - The options object.
+  */
+  MagnetLogo.prototype.setDefaults = function(element) {
+    // set the colors
     this.backgroundColor = 'rgb(40, 175, 206)';
     this.mantaColor = 'rgb(40, 175, 206)';
     this.textColor = 'rgb(87, 87, 87)';
     this.borderColor = 'rgb(255, 255, 255)';
 
-    this.currentScale = 1;
+    this.width = element.clientWidth;
+    this.height = element.clientHeight;
 
-    this.currentScaledCanvasWidth = this.clientWidth / this.currentScale;
+    // enables the 3 segments of drawing
+    this.backgroundEnabled = true;
+    this.mantaEnabled = true;
+    this.textEnabled = true;
+    this.noiseEnabled = false;
 
-    this.updateFrameValues(0);
-  }
+    this.scale = 1;
 
-  MagnetLogo.prototype.animate = function() {
-    this.animating = true;
-    this.noiseInit();
-    window.requestAnimationFrame(this.animationCallback.bind(this));
+    // set the default render behaviour
+    this.backgroundSize = 'contain';
+    this.logoSize = 'contain';
+    this.position = 'center';
   };
 
-  MagnetLogo.prototype.animationCallback = function(timestamp) {
-    this.updateFrameValues(timestamp);
-    this.ctx.save();
-    this.clear();
-    this.fitContainer();
-    this.center();
+  /**
+  * MagnetLogo.render - Loads an object with options and renders the logo again
+  * into the canvas
+  * @param {Object} options - The options object.
+  */
+  MagnetLogo.prototype.render = function(options) {
+    this.setOptions(options);
+
+    if (this.logoSize == 'contain') {
+      this.fitContainer();
+    }
+
+    if (this.position == 'center') {
+      this.center();
+    }
 
     if (this.backgroundEnabled) {
       this.drawBackground();
     }
-
-    if (this.textEnabled) {
-      this.drawText();
-    }
-
-    //this.resize();
-    this.swim();
-
     if (this.mantaEnabled) {
       this.drawManta();
     }
-
-    this.ctx.restore();
-
-    // Request next frame
-    if (this.animating) {
-      window.requestAnimationFrame(this.animationCallback.bind(this));
+    if (this.textEnabled) {
+      this.drawText();
     }
   };
 
-  MagnetLogo.prototype.resize = function() {
-    this.ctx.scale(0.5, 0.5);
-    var auxColor;
+  /**
+  * MagnetLogo.fitContainer - changes the scale of the image to be drawn
+  * completly within the canvas
+  */
+  MagnetLogo.prototype.fitContainer = function() {
+    var baseWidth;
+    var baseHeight;
+
+    // this is the horizontal offset between the mantaray and the left border
+    var horizontalOffset = 73.977794;
+
+    // by default there is no separation between the canvas and the logo
+    var topOffset = 0;
+
+    if (this.backgroundEnabled || this.textEnabled) {
+      baseWidth = this.logoWidth;
+    } else {
+      baseWidth = this.logoWidth - horizontalOffset * 2;
+    }
+
+    baseHeight = this.logoHeight;
+
+    if (this.textEnabled && !this.backgroundEnabled && !this.mantaEnabled) {
+      // since we are only rendering the text, we need to move the text up
+      topOffset = 627.099980;
+    }
+
+    var newWidthScale = this.width / baseWidth;
+    var newHeightScale = this.height / baseHeight;
+
+    if (newWidthScale < newHeightScale) {
+      this.scale = newWidthScale;
+    } else {
+      this.scale = newHeightScale;
+    }
+
+    // move to the top
+    this.ctx.translate(0, - (topOffset * this.scale));
+
+    this.ctx.scale(this.scale, this.scale);
   };
 
   /**
@@ -91,195 +172,62 @@
     var oy;
 
     var ox = (
-        this.clientWidth - this.currentScale * this.logoW) /
-      2 / this.currentScale;
+        this.width - this.scale * this.logoWidth) /
+      2 / this.scale;
 
     oy = (
-      this.clientHeight - this.currentScale * this.currentHeight) /
-      2 / this.currentScale;
+      this.height - this.scale * this.logoHeight) /
+      2 / this.scale;
 
     this.ctx.translate(ox, oy);
   };
 
-  MagnetLogo.prototype.fitContainer = function() {
-    var baseWidth;
-    var baseHeight;
-
-    var horizontalOffset = 73.977794;
-
-    var topOffset = 0;
-
-    if (this.backgroundEnabled || this.textEnabled) {
-      baseWidth = this.logoW;
-    } else {
-      baseWidth = this.logoW - horizontalOffset * 2;
-    }
-
-    if (this.textEnabled && (this.backgroundEnabled || this.mantaEnabled)) {
-      baseHeight = 689;
-    } else if (!this.textEnabled) {
-      baseHeight = this.backgroundHeight;
-    } else {
-      // te text has to be moved to the top
-      var topOffset = 627.099980;
-      baseHeight = this.textHeight;
-    }
-
-    var newWidth = this.canvas.clientWidth / baseWidth;
-    var newHeight = this.canvas.clientHeight / baseHeight;
-
-    if (newWidth < newHeight) {
-      this.currentScale = newWidth;
-    } else {
-      this.currentScale = newHeight;
-    }
-
-    // move to the top
-    this.ctx.translate(0, - (topOffset * this.currentScale));
-
-    this.ctx.scale(this.currentScale, this.currentScale);
-
-    this.currentScaledCanvasWidth = this.clientWidth / this.currentScale;
+  /**
+  * MagnetLogo.animate - starts the animation process
+  */
+  MagnetLogo.prototype.animate = function() {
+    this.animating = true;
+    this.noiseInit();
+    window.requestAnimationFrame(this.animationCallback.bind(this));
   };
 
   /**
-  * Renders a frame and automatically subscribes to the next.
-  * @param  {DOMHighResTimeStamp} timestamp
+  * MagnetLogo.animationCallback - renders a frame of the animation
+  * Almost like the render method, except that the manta ray needs to swim
+  * so we need to call
   */
-  MagnetLogo.prototype.renderFrame = function(timestamp) {
-    this.checkResize();
-
-    this.clear();
-
-    this.setcurrentScale();
-    this.center();
-
+  MagnetLogo.prototype.animationCallback = function(timestamp) {
     this.updateFrameValues(timestamp);
-
-    this.drawBackground();
-    this.drawManta();
-    this.drawText();
-
-    // Request next frame
-    if (this.animating) {
-      window.requestAnimationFrame(window.animationCallback);
-    }
-  };
-
-  /**
-  * Updates the frame values for a given timestamp
-  */
-  MagnetLogo.prototype.updateFrameValues = function(timestamp) {
-    var lambda = (timestamp % 2000) / 2000;
-
-    this.slowLambda = (timestamp % 20000) / 20000;
-    this.lambda = lambda;
-
-    // Animation time
-    this.angle = 2 * Math.PI * lambda;
-
-    var sinTime = (Math.sin(this.angle) + 1) / 2;
-    this.cosTime = (Math.cos(this.angle) + 1) / 2;
-    this.triTime = Math.abs(lambda - 0.5);
-
-    // Animation coords
-    this.centerX = (this.logoW + 20) / 2;
-    this.flipFactor = (1 - 0.3 * sinTime);
-    this.horizontalFactor = (0.7 + 0.3 * sinTime);
-  };
-
-  /**
-  * for a given x coord, obtain the translated coord
-  */
-  MagnetLogo.prototype.leftTransform = function(x) {
-    var toCenter = this.centerX - x;
-    var distanceFactor = toCenter / this.centerX;
-
-    var horizontalFactor = 1 - ((1 - this.horizontalFactor) * distanceFactor);
-
-    return this.centerX - (horizontalFactor * toCenter);
-  };
-
-  /**
-  * for a given x coord, obtain the translated coord
-  */
-  MagnetLogo.prototype.rightTransform = function(x) {
-    var fromCenter = x - this.centerX;
-    var distanceFactor = fromCenter / this.centerX;
-
-    var horizontalFactor = 1 - ((1 - this.horizontalFactor) * distanceFactor);
-    return this.centerX + (horizontalFactor * fromCenter);
-  };
-
-  /**
-  * for a given x coord, obtain the flip translated coord
-  */
-  MagnetLogo.prototype.flipTransform = function(x) {
-    var distance = x - this.centerX;
-    distance = this.flipFactor * distance;
-    return this.centerX + distance;
-  };
-
-  /**
-  * for a given y coord, tip of the tail
-  */
-  MagnetLogo.prototype.tailY = function(y) {
-    return (this.flipFactor - 0.7) * 50 + y;
-  };
-
-  MagnetLogo.prototype.stop = function() {
-    this.animating = false;
-  };
-
-  /**
-  * Resets transformation and clears the canvas.
-  */
-  MagnetLogo.prototype.clear = function() {
-    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-  };
-
-  MagnetLogo.prototype.render = function(options) {
-    var k;
-
-    options = options || {};
-
-    this.backgroundEnabled = true;
-    this.mantaEnabled = true;
-    this.textEnabled = true;
-
-    for (k in options) {
-      this[k] = options[k];
-    }
-
-    if (this.textEnabled && (this.backgroundEnabled || this.mantaEnabled)) {
-      this.currentHeight = this.logoH;
-    } else if (!this.textEnabled) {
-      this.currentHeight = this.backgroundHeight;
-    } else {
-      this.currentHeight = this.textHeight;
-    }
-
+    this.clear();
     this.fitContainer();
     this.center();
 
-    this.draw();
-  };
-
-  MagnetLogo.prototype.draw = function() {
     if (this.backgroundEnabled) {
       this.drawBackground();
     }
-    if (this.mantaEnabled) {
-      this.drawManta();
-    }
+
     if (this.textEnabled) {
       this.drawText();
     }
+
+    this.swim();
+
+    if (this.mantaEnabled) {
+      this.drawManta();
+    }
+
+    // Request next frame
+    if (this.animating) {
+      window.requestAnimationFrame(this.animationCallback.bind(this));
+    }
   };
 
+  /**
+  * MagnetLogo.swim - Moves the manta ray, so it appears to be swiming
+  */
   MagnetLogo.prototype.swim = function() {
-    var height = this.currentHeight * (0.9 - 1.7 * this.slowLambda);
+    var height = this.height * (0.1 - 1.7 * this.slowLambda);
+    console.log(height);
 
     if (height > 0) {
       this.reset = true;
@@ -298,7 +246,78 @@
   };
 
   /**
-  * Draws a moving background.
+  * MagnetLogo.clear - Resets transformation and clears the canvas.
+  */
+  MagnetLogo.prototype.clear = function() {
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  };
+
+  /**
+  * MagnetLogo.updateFrameValues - Updates the frame values for a given
+  * timestamp
+  */
+  MagnetLogo.prototype.updateFrameValues = function(timestamp) {
+    var lambda = (timestamp % 2000) / 2000;
+
+    this.slowLambda = (timestamp % 20000) / 20000;
+    this.lambda = lambda;
+
+    // Animation time
+    this.angle = 2 * Math.PI * lambda;
+
+    var sinTime = (Math.sin(this.angle) + 1) / 2;
+    this.cosTime = (Math.cos(this.angle) + 1) / 2;
+    this.triTime = Math.abs(lambda - 0.5);
+
+    // Animation coords
+    this.centerX = (this.logoWidth + 20) / 2;
+    this.flipFactor = (1 - 0.3 * sinTime);
+    this.horizontalFactor = (0.7 + 0.3 * sinTime);
+  };
+
+  /**
+  * MagnetLogo.leftTransform - For a given x coord, obtain the translated coord
+  */
+  MagnetLogo.prototype.leftTransform = function(x) {
+    var toCenter = this.centerX - x;
+    var distanceFactor = toCenter / this.centerX;
+
+    var horizontalFactor = 1 - ((1 - this.horizontalFactor) * distanceFactor);
+
+    return this.centerX - (horizontalFactor * toCenter);
+  };
+
+  /**
+  * MagnetLogo.rightTransform - For a given x coord, obtain the translated coord
+  */
+  MagnetLogo.prototype.rightTransform = function(x) {
+    var fromCenter = x - this.centerX;
+    var distanceFactor = fromCenter / this.centerX;
+
+    var horizontalFactor = 1 - ((1 - this.horizontalFactor) * distanceFactor);
+    return this.centerX + (horizontalFactor * fromCenter);
+  };
+
+  /**
+  * MagnetLogo.rightTransform - For a given x coord, obtain the flip translated
+  * coord
+  */
+  MagnetLogo.prototype.flipTransform = function(x) {
+    var distance = x - this.centerX;
+    distance = this.flipFactor * distance;
+    return this.centerX + distance;
+  };
+
+  /**
+  * MagnetLogo.rightTransform - For a given y coord, tip of the tail
+  */
+  MagnetLogo.prototype.tailY = function(y) {
+    return (this.flipFactor - 0.7) * 50 + y;
+  };
+
+  /**
+  * MagnetLogo.drawBackground - Draws the background of the logo
   */
   MagnetLogo.prototype.drawBackground = function(color) {
     var ctx = this.ctx;
@@ -311,8 +330,8 @@
     if (this.noiseEnabled) {
       this.moveNoise();
       this.ctx.drawImage(
-        this.noiseCtx.canvas, 0, 0, this.noiseRes, this.noiseRes,
-        0, 0, this.logoW - 1, this.backgroundHeight - 1);
+        this.noiseCtx.canvas, 0, 0, this.noiseResolution, this.noiseResolution,
+        0, 0, this.logoWidth - 1, this.logoBackgroundHeight - 1);
     }
 
     // #rectBackground
@@ -323,20 +342,30 @@
     ctx.miterLimit = 4;
     ctx.lineWidth = 3.000000;
     ctx.fillStyle = this.backgroundColor;
-    ctx.rect(0.000000, 0.000000, this.logoW, this.backgroundHeight);
+    if (this.backgroundSize == 'cover') {
+      ctx.rect(
+        -this.logoWidth,
+        -this.logoHeight,
+        3 * this.logoWidth,
+        3 * this.logoHeight
+      );
+    } else {
+      ctx.rect(0.000000, 0.000000, this.logoWidth, this.logoBackgroundHeight);
+    }
     ctx.fill();
     ctx.globalAlpha = 1;
   };
 
   /**
-  * Creates a small canvas filled with noise.
+  * MagnetLogo.noiseInit - Initializes the noise to be used on the background
+  * when animating
   */
   MagnetLogo.prototype.noiseInit = function() {
     var noiseCanvas = document.createElement('canvas');
 
     this.noiseEnabled = true;
-    noiseCanvas.width = this.noiseRes;
-    noiseCanvas.height = this.noiseRes;
+    noiseCanvas.width = this.noiseResolution;
+    noiseCanvas.height = this.noiseResolution;
     this.noiseCtx = noiseCanvas.getContext('2d');
 
     var w = this.noiseCtx.canvas.width,
@@ -353,7 +382,7 @@
   };
 
   /**
-  * Moves the noise canvas one pixel down.
+  * MagnetLogo.moveNoise - Moves the noise canvas one pixel down.
   */
   MagnetLogo.prototype.moveNoise = function() {
     var w = this.noiseCtx.canvas.width,
@@ -380,6 +409,9 @@
     this.noiseCtx.putImageData(idata, 0, 0);
   };
 
+  /**
+  * MagnetLogo.drawManta - Draws the mantaray
+  */
   MagnetLogo.prototype.drawManta = function() {
     this.mantaEnabled = true;
 
@@ -392,6 +424,9 @@
     this.ctx.translate(0, 30 * this.cosTime);
   };
 
+  /**
+  * MagnetLogo.drawPerimeter - Draws the perimieter of the mantaray
+  */
   MagnetLogo.prototype.drawPerimeter = function(color, borderColor) {
     var ctx = this.ctx;
 
@@ -536,6 +571,9 @@
     this.ctx.stroke();
   };
 
+  /**
+  * MagnetLogo.drawRightEye - Draws the right eye of the mantaray
+  */
   MagnetLogo.prototype.drawRightEye = function() {
     var ctx = this.ctx;
 
@@ -565,6 +603,9 @@
     ctx.fill();
   };
 
+  /**
+  * MagnetLogo.drawLeftEye - Draws the left eye of the mantaray
+  */
   MagnetLogo.prototype.drawLeftEye = function() {
     var ctx = this.ctx;
 
@@ -594,6 +635,9 @@
     ctx.fill();
   };
 
+  /**
+  * MagnetLogo.drawMantaGill - Draws the gill of the mantaray
+  */
   MagnetLogo.prototype.drawMantaGill = function() {
     var ctx = this.ctx;
 
@@ -793,4 +837,5 @@
   };
 
   window.MagnetLogo = MagnetLogo;
+
 }());

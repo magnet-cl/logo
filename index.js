@@ -13,12 +13,13 @@
   });
 
   // render only the mantaray
-  var logoText = new MagnetLogo(document.getElementById('logo-text'));
-
-  logoText.render({
-    mantaEnabled: false,
-    backgroundEnabled: false
+  var logoText = new MagnetLogo(document.getElementById('logo-text'), {
+    backgroundEnabled: false,
+    height: 60,
+    mantaEnabled: false
   });
+
+  logoText.render();
 
   window.logoText = logoText;
 
@@ -31,4 +32,18 @@
     borderColor: '#ffff00'
   });
   logoAnimated.animate();
+
+  var options = {
+    height: 500
+  };
+
+  var logoFullBackground = new MagnetLogo(
+    document.getElementById('logo-full-background'),
+    options
+  );
+
+  logoFullBackground.fitContainer();
+  logoFullBackground.render({
+    backgroundSize: 'cover'
+  });
 }());
