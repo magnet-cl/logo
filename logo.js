@@ -39,6 +39,8 @@
     this.setOptions(options);
 
     this.updateFrameValues(0);
+
+    this.swimWait = true;
   };
 
   /**
@@ -226,22 +228,29 @@
   * MagnetLogo.swim - Moves the manta ray, so it appears to be swiming
   */
   MagnetLogo.prototype.swim = function() {
-    var height = this.height * (0.1 - 1.7 * this.slowLambda);
+    var moveY;
 
-    if (height > 0) {
+    if (this.slowLambda > 0.85) {
       this.reset = true;
-    }
-
-    if (this.reset && height < 0) {
-      this.stop = !this.stop;
-      this.reset = false;
-    }
-
-    if (this.stop) {
       return;
     }
 
-    this.ctx.translate(0, height);
+    if (this.reset) {
+      this.swimWait = !this.swimWait;
+      this.reset = false;
+    }
+
+    if (this.swimWait) {
+      return;
+    }
+
+    if (this.slowLambda < 0.4) {
+      moveY = this.fullHeight * (-2 * this.slowLambda);
+    } else if (this.slowLambda < 0.85) {
+      moveY = this.fullHeight * (2 - 2 * (this.slowLambda + 0.15));
+    }
+
+    this.ctx.translate(0, moveY);
   };
 
   /**
@@ -263,7 +272,7 @@
     this.lambda = lambda;
 
     // Animation time
-    this.angle = 2 * Math.PI * lambda;
+    this.angle = 2 * Math.PI * (lambda + 0.25);
 
     var sinTime = (Math.sin(this.angle) + 1) / 2;
     this.cosTime = (Math.cos(this.angle) + 1) / 2;
@@ -271,7 +280,6 @@
 
     // Animation coords
     this.centerX = (this.logoWidth + 20) / 2;
-    this.flipFactor = (1 - 0.3 * sinTime);
     this.horizontalFactor = (0.7 + 0.3 * sinTime);
   };
 
@@ -304,7 +312,7 @@
   */
   MagnetLogo.prototype.flipTransform = function(x) {
     var distance = x - this.centerX;
-    distance = this.flipFactor * distance;
+    distance = this.horizontalFactor * distance;
     return this.centerX + distance;
   };
 
@@ -312,7 +320,7 @@
   * MagnetLogo.rightTransform - For a given y coord, tip of the tail
   */
   MagnetLogo.prototype.tailY = function(y) {
-    return (this.flipFactor - 0.7) * 50 + y;
+    return (this.horizontalFactor - 0.7) * 50 + y;
   };
 
   /**
