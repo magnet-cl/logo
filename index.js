@@ -15,7 +15,7 @@
   // render only the mantaray
   var logoText = new MagnetLogo(document.getElementById('logo-text'), {
     backgroundEnabled: false,
-    height: 60,
+    height: 400,
     mantaEnabled: false
   });
 

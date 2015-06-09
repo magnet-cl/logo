@@ -58,6 +58,11 @@
       this[i] = options[i];
     }
 
+    if (options.fitToClientSize) {
+      this.width = this.canvas.clientWidth;
+      this.height = this.canvas.clientHeight;
+    }
+
     this.canvas.height = this.height;
     this.canvas.width = this.width;
 
@@ -83,6 +88,9 @@
 
     this.width = element.clientWidth;
     this.height = element.clientHeight;
+
+    this.canvas.height = this.height;
+    this.canvas.width = this.width;
 
     // enables the 3 segments of drawing
     this.backgroundEnabled = true;
