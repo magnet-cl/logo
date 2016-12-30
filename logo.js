@@ -67,7 +67,11 @@
     this.canvas.width = this.width;
 
     if (this.textEnabled && (this.backgroundEnabled || this.mantaEnabled)) {
-      this.logoHeight = this.fullHeight;
+      if (this.horizontal) {
+        this.logoHeight = this.logoBackgroundHeight;
+      } else {
+        this.logoHeight = this.fullHeight;
+      }
     } else if (!this.textEnabled) {
       this.logoHeight = this.logoBackgroundHeight;
     } else {
@@ -104,6 +108,8 @@
     this.backgroundSize = 'contain';
     this.logoSize = 'contain';
     this.position = 'center';
+
+    this.horizontal = false;
   };
 
   /**
@@ -122,6 +128,10 @@
       this.center();
     }
 
+    if (this.horizontal) {
+      this.ctx.translate(-600, 0);
+    }
+
     if (this.backgroundEnabled) {
       this.drawBackground();
     }
@@ -129,6 +139,10 @@
       this.drawManta();
     }
     if (this.textEnabled) {
+      if (this.horizontal) {
+        this.ctx.scale(1.9, 1.9);
+        this.ctx.translate(350, -500);
+      }
       this.drawText();
     }
   };

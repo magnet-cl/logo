@@ -23,6 +23,17 @@
 
   window.logoText = logoText;
 
+  var el = document.getElementById('logo-horizontal');
+  var logoHorizontal = new MagnetLogo(el, {
+    horizontal: true,
+    height: 200,
+    width: 600
+  });
+
+  logoHorizontal.render();
+
+  window.logoHorizontal = logoHorizontal;
+
   // render only the mantaray
   var logoAnimated = new MagnetLogo(document.getElementById('logo-animation'));
   logoAnimated.render({
