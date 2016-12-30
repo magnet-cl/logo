@@ -68,6 +68,21 @@
         </code>
       </p>
       <canvas id='logo-text' style="width:100%;"></canvas>
+      <p>To render an horizontal layout, use horizontal: true</p>
+      <p>Set a width 3 times bigger than the height to allow enough space to render the logo</p>
+      <p>
+        <code>
+          var logoHorizontal = new MagnetLogo(document.getElementById('logo-horizontal'));
+          <br>
+
+          logoHorizontal.render({
+            horizontal: true,
+            height: 250,
+            width: 750
+          });
+        </code>
+      </p>
+      <canvas id='logo-horizontal'></canvas>
       <p>Render can take the colors of the elements as parameters and can animate with a default animation.</p>
       <p>
         <code>

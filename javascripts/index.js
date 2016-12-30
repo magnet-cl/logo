@@ -22,6 +22,18 @@
 
   window.logoText = logoText;
 
+  // horizontal render
+  var el = document.getElementById('logo-horizontal');
+  var logoHorizontal = new MagnetLogo(el);
+
+  logoHorizontal.render({
+    horizontal: true,
+    height: 250,
+    width: 750
+  });
+
+  window.logoHorizontal = logoHorizontal;
+
   // render only the mantaray
   var logoAnimated = new MagnetLogo(document.getElementById('logo-animation'));
   logoAnimated.render({
