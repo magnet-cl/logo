@@ -48,15 +48,23 @@
     var verticalInput = document.getElementById('vertical-input');
     var heightInput = document.getElementById('height-input');
     var renderText = document.getElementById('render-text-input').checked;
+    var renderBackground = document.getElementById(
+      'render-background-input'
+    ).checked;
+    var renderManta = document.getElementById('render-manta-input').checked;
 
-    if (!renderText) {
-      heightInput.value = width;
-    } else {
-      if (verticalInput.checked) {
-        heightInput.value = parseInt(width * 689 / 600);
+    if (renderText) {
+      if (renderBackground || renderManta) {
+        if (verticalInput.checked) {
+          heightInput.value = parseInt(width * 689 / 600);
+        } else {
+          heightInput.value = parseInt(width / 3);
+        }
       } else {
-        heightInput.value = parseInt(width / 3);
+        heightInput.value = parseInt(width * 64 / 600);
       }
+    } else {
+      heightInput.value = width;
     }
     renderCustomLogo();
   };
@@ -66,15 +74,27 @@
     var verticalInput = document.getElementById('vertical-input');
     var widthInput = document.getElementById('width-input');
     var renderText = document.getElementById('render-text-input').checked;
+    var renderBackground = document.getElementById(
+      'render-background-input'
+    ).checked;
+    var renderManta = document.getElementById('render-manta-input').checked;
 
-    if (!renderText) {
-      widthInput.value = height;
-    } else {
-      if (verticalInput.checked) {
-        widthInput.value = parseInt(height * 600 / 689);
+    if (renderText) {
+      if (renderBackground || renderManta) {
+        if (verticalInput.checked) {
+          widthInput.value = parseInt(height * 600 / 689);
+        } else {
+          widthInput.value = parseInt(height * 3);
+        }
       } else {
-        widthInput.value = parseInt(height * 3);
+        if (verticalInput.checked) {
+          widthInput.value = parseInt(height * 600 / 61);
+        } else {
+          widthInput.value = parseInt(height * 3);
+        }
       }
+    } else {
+      widthInput.value = height;
     }
     renderCustomLogo();
   };

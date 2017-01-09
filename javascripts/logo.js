@@ -67,7 +67,7 @@
     this.canvas.width = this.width;
 
     if (this.textEnabled && (this.backgroundEnabled || this.mantaEnabled)) {
-      if (this.horizontal && this.textEnabled) {
+      if (this.horizontal) {
         this.logoHeight = this.logoBackgroundHeight;
       } else {
         this.logoHeight = this.fullHeight;
@@ -128,8 +128,10 @@
       this.center();
     }
 
-    if (this.horizontal && this.textEnabled) {
-      this.ctx.translate(-600, 0);
+    if (this.textEnabled && (this.backgroundEnabled || this.mantaEnabled)) {
+      if (this.horizontal) {
+        this.ctx.translate(-600, 0);
+      }
     }
 
     if (this.backgroundEnabled) {
@@ -139,9 +141,11 @@
       this.drawManta();
     }
     if (this.textEnabled) {
-      if (this.horizontal && this.textEnabled) {
-        this.ctx.scale(1.9, 1.9);
-        this.ctx.translate(350, -500);
+      if (this.backgroundEnabled || this.mantaEnabled) {
+        if (this.horizontal) {
+          this.ctx.scale(1.9, 1.9);
+          this.ctx.translate(350, -500);
+        }
       }
       this.drawText();
     }
