@@ -67,7 +67,7 @@
     this.canvas.width = this.width;
 
     if (this.textEnabled && (this.backgroundEnabled || this.mantaEnabled)) {
-      if (this.horizontal) {
+      if (this.horizontal && this.textEnabled) {
         this.logoHeight = this.logoBackgroundHeight;
       } else {
         this.logoHeight = this.fullHeight;
@@ -128,7 +128,7 @@
       this.center();
     }
 
-    if (this.horizontal) {
+    if (this.horizontal && this.textEnabled) {
       this.ctx.translate(-600, 0);
     }
 
@@ -139,7 +139,7 @@
       this.drawManta();
     }
     if (this.textEnabled) {
-      if (this.horizontal) {
+      if (this.horizontal && this.textEnabled) {
         this.ctx.scale(1.9, 1.9);
         this.ctx.translate(350, -500);
       }
