@@ -42,4 +42,74 @@
     textColor: '#0000ff'
   });
   logoAnimated.animate();
+
+  document.getElementById('width-input').onchange = function() {
+    var width = parseInt(this.value);
+    var verticalInput = document.getElementById('vertical-input');
+    var heightInput = document.getElementById('height-input');
+    var renderText = document.getElementById('render-text-input').checked;
+
+    if (!renderText) {
+      heightInput.value = width;
+    } else {
+      if (verticalInput.checked) {
+        heightInput.value = parseInt(width * 689 / 600);
+      } else {
+        heightInput.value = parseInt(width / 3);
+      }
+    }
+    renderCustomLogo();
+  };
+
+  document.getElementById('height-input').onchange = function() {
+    var height = parseInt(this.value);
+    var verticalInput = document.getElementById('vertical-input');
+    var widthInput = document.getElementById('width-input');
+    var renderText = document.getElementById('render-text-input').checked;
+
+    if (!renderText) {
+      widthInput.value = height;
+    } else {
+      if (verticalInput.checked) {
+        widthInput.value = parseInt(height * 600 / 689);
+      } else {
+        widthInput.value = parseInt(height * 3);
+      }
+    }
+    renderCustomLogo();
+  };
+
+  document.getElementById('vertical-input').onchange = updateLogo;
+  document.getElementById('horizontal-input').onchange = updateLogo;
+  document.getElementById('render-text-input').onchange = updateLogo;
+  document.getElementById('render-background-input').onchange = updateLogo;
+  document.getElementById('render-manta-input').onchange = updateLogo;
+
+  function updateLogo() {
+    document.getElementById('width-input').onchange();
+    renderCustomLogo();
+  }
+
+  function renderCustomLogo() {
+    var height = parseInt(document.getElementById('height-input').value);
+    var width = parseInt(document.getElementById('width-input').value);
+    var logoCustom = new MagnetLogo(document.getElementById('logo-custom'));
+    var vertical = document.getElementById('vertical-input').checked;
+    var renderText = document.getElementById('render-text-input').checked;
+    var renderBackground = document.getElementById(
+      'render-background-input'
+    ).checked;
+    var renderManta = document.getElementById('render-manta-input').checked;
+
+    logoCustom.render({
+      height: height,
+      width: width,
+      horizontal: !vertical,
+      textEnabled: renderText,
+      mantaEnabled: renderManta,
+      backgroundEnabled: renderBackground
+    });
+  }
+  renderCustomLogo();
+
 }());

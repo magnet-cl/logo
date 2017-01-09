@@ -100,7 +100,7 @@
       <canvas id='logo-animation' style="width:100%;"></canvas>
 
       <h2>
-        <a id="user-content-defaults" class="anchor" href="#defaults" aria-hidden="true"><span class="octicon octicon-link"></span></a>Defaults</h2>
+        <a id="user-content-defaults" class="anchor" href="#defaults" aria-hidden="true"><span class="octicon octicon-link"></span>Defaults</a></h2>
 
       <p>Default colors are:</p>
 
@@ -110,6 +110,46 @@
         <li>text: rgb(87, 87, 87) (#575757) cmyk(0, 0, 0, 0.659)</li>
         <li>Manta border: rgb(255, 255, 255) (#ffffff) cmyk(0, 0, 0, 0)</li>
       </ul>
+
+      <h2>
+        <a id="user-content-logo-generator" class="anchor" href="#logo-generator" aria-hidden="true"><span class="octicon octicon-link"></span>Logo Generator</a>
+      </h2>
+
+      <form.class="">
+        <div class="form-group">
+          <label for="width-input">Width</label>
+          <input type="number" class="form-control" id="width-input" placeholder="width" value="600">
+        </div>
+        <div class="form-group">
+          <label for="height-input">Height</label>
+          <input type="number" class="form-control" id="height-input" placeholder="height" value="689">
+        </div>
+        <div class="radio">
+          <label>
+            <input checked type="radio" name="orientation" value="vertical" id='vertical-input'> Vertical Text 
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="orientation" value="horizontal" id="horizontal-input"> Horizontal Text
+          </label>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" checked id="render-background-input"> Draw background
+          </label>
+          <label>
+            <input type="checkbox" checked id="render-manta-input"> Draw manta
+          </label>
+          <label>
+            <input type="checkbox" checked id="render-text-input"> Draw text
+          </label>
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+
+      <canvas id='logo-custom'></canvas>
+
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/magnet-cl/logo">Logo</a> is maintained by <a href="https://github.com/magnet-cl">magnet-cl</a>.</span>
