@@ -89,6 +89,7 @@
     this.mantaColor = 'rgb(40, 175, 206)';
     this.textColor = 'rgb(87, 87, 87)';
     this.borderColor = 'rgb(255, 255, 255)';
+    this.eyesColor = 'rgb(255, 255, 255)';
 
     this.width = element.clientWidth;
     this.height = element.clientHeight;
