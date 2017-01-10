@@ -104,6 +104,11 @@
   document.getElementById('render-text-input').onchange = updateLogo;
   document.getElementById('render-background-input').onchange = updateLogo;
   document.getElementById('render-manta-input').onchange = updateLogo;
+  document.getElementById('manta-color-input').onchange = updateLogo;
+  document.getElementById('background-color-input').onchange = updateLogo;
+  document.getElementById('text-color-input').onchange = updateLogo;
+  document.getElementById('border-color-input').onchange = updateLogo;
+  document.getElementById('eyes-color-input').onchange = updateLogo;
 
   function updateLogo() {
     document.getElementById('width-input').onchange();
@@ -120,14 +125,26 @@
       'render-background-input'
     ).checked;
     var renderManta = document.getElementById('render-manta-input').checked;
+    var textColor = document.getElementById('text-color-input').value;
+    var backgroundColor = document.getElementById(
+      'background-color-input'
+    ).value;
+    var mantaColor = document.getElementById('manta-color-input').value;
+    var borderColor = document.getElementById('border-color-input').value;
+    var eyesColor = document.getElementById('eyes-color-input').value;
 
     logoCustom.render({
+      backgroundColor: backgroundColor,
+      backgroundEnabled: renderBackground,
+      borderColor: borderColor,
+      eyesColor: eyesColor,
       height: height,
-      width: width,
       horizontal: !vertical,
-      textEnabled: renderText,
+      mantaColor: mantaColor,
       mantaEnabled: renderManta,
-      backgroundEnabled: renderBackground
+      textColor: textColor,
+      textEnabled: renderText,
+      width: width
     });
   }
   renderCustomLogo();

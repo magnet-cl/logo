@@ -615,7 +615,7 @@
     ctx.lineJoin = 'miter';
     ctx.lineCap = 'butt';
     ctx.lineWidth = 1.000000;
-    ctx.fillStyle = 'rgb(255, 255, 255)';
+    ctx.fillStyle = this.eyesColor;
 
     ctx.moveTo(this.rightTransform(338.300000), 149.099980);
     ctx.bezierCurveTo(
@@ -647,7 +647,7 @@
     ctx.lineJoin = 'miter';
     ctx.lineCap = 'butt';
     ctx.lineWidth = 1.000000;
-    ctx.fillStyle = 'rgb(255, 255, 255)';
+    ctx.fillStyle = this.eyesColor;
 
     ctx.moveTo(this.leftTransform(282.106930), 149.151200);
     ctx.bezierCurveTo(
@@ -678,7 +678,7 @@
     ctx.lineJoin = 'miter';
     ctx.lineCap = 'butt';
     ctx.lineWidth = 1.000000;
-    ctx.fillStyle = 'rgb(255, 255, 255)';
+    ctx.fillStyle = this.eyesColor;
     ctx.moveTo(345.810920, 210.370830);
     ctx.bezierCurveTo(
       354.767600, 198.585720,

@@ -109,6 +109,7 @@
         <li>manta ray: rgb(40, 175, 206) (#28AFCE) cmyk(0.806, 0.15, 0, 0.192)</li>
         <li>text: rgb(87, 87, 87) (#575757) cmyk(0, 0, 0, 0.659)</li>
         <li>Manta border: rgb(255, 255, 255) (#ffffff) cmyk(0, 0, 0, 0)</li>
+        <li>Manta eyes: rgb(255, 255, 255) (#ffffff) cmyk(0, 0, 0, 0)</li>
       </ul>
 
       <h2>
@@ -116,35 +117,89 @@
       </h2>
 
       <form.class="">
-        <div class="form-group">
-          <label for="width-input">Width</label>
-          <input type="number" class="form-control" id="width-input" placeholder="width" value="600">
-        </div>
-        <div class="form-group">
-          <label for="height-input">Height</label>
-          <input type="number" class="form-control" id="height-input" placeholder="height" value="689">
-        </div>
-        <div class="radio">
-          <label>
-            <input checked type="radio" name="orientation" value="vertical" id='vertical-input'> Vertical Text 
-          </label>
-        </div>
-        <div class="radio">
-          <label>
-            <input type="radio" name="orientation" value="horizontal" id="horizontal-input"> Horizontal Text
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" checked id="render-background-input"> Draw background
-          </label>
-          <label>
-            <input type="checkbox" checked id="render-manta-input"> Draw manta
-          </label>
-          <label>
-            <input type="checkbox" checked id="render-text-input"> Draw text
-          </label>
-        </div>
+        <table>
+          <tbody>
+            <tr>
+              <th colspan="3">
+                <label for="width-input">Width</label>
+              </th>
+              <td colspan="3">
+                <input type="number" class="form-control" id="width-input" placeholder="width" value="600">
+              </td>
+              <th colspan="3">
+                <label for="height-input">Height</label>
+              </th>
+              <td colspan="3">
+                <input type="number" class="form-control" id="height-input" placeholder="height" value="689">
+              </td>
+            </tr>
+            <tr>
+              <th colspan="3">
+                <label for="width-input">Eyes color</label>
+              </th>
+              <td colspan="3">
+                <input type="eyes" class="form-control" id="eyes-color-input" placeholder="width" value="#FFFFFF">
+              </td>
+              <th colspan="3">
+                <label for="width-input">Manta color</label>
+              </th>
+              <td colspan="3">
+                <input type="text" class="form-control" id="manta-color-input" placeholder="width" value="#28AFCE">
+              </td>
+            </tr>
+            <tr>
+              <th colspan="3">
+                <label for="width-input">Text color</label>
+              </th>
+              <td colspan="3">
+                <input type="text" class="form-control" id="text-color-input" placeholder="width" value="#575757">
+              </td>
+              <th colspan="3">
+                <label for="width-input">Border color</label>
+              </th>
+              <td colspan="3">
+                <input type="border" class="form-control" id="border-color-input" placeholder="width" value="#FFFFFF">
+              </td>
+            </tr>
+            <tr>
+              <th colspan="6">
+                <label for="width-input">Background color</label>
+              </th>
+              <td colspan="6">
+                <input type="text" class="form-control" id="background-color-input" placeholder="width" value="#28AFCE">
+              </td>
+            </tr>
+            <tr>
+              <td colspan="6">
+                <label>
+                  <input checked type="radio" name="orientation" value="vertical" id='vertical-input'> Vertical Text 
+                </label>
+              </td>
+              <td colspan="6">
+                <label>
+                  <input type="radio" name="orientation" value="horizontal" id="horizontal-input"> Horizontal Text
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="4">
+                <label>
+                  <input type="checkbox" checked id="render-background-input"> Draw background
+                </label>
+              </td>
+              <td colspan="4">
+                <label>
+                  <input type="checkbox" checked id="render-manta-input"> Draw manta
+                </label>
+              </td>
+              <td colspan="4">
+                <label>
+                  <input type="checkbox" checked id="render-text-input"> Draw text
+                </label>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </form>
 
       <div style="text-align: center">
