@@ -66,6 +66,7 @@
     } else {
       heightInput.value = width;
     }
+
     renderCustomLogo();
   };
 
@@ -96,6 +97,7 @@
     } else {
       widthInput.value = height;
     }
+
     renderCustomLogo();
   };
 
@@ -109,11 +111,17 @@
   document.getElementById('text-color-input').onchange = updateLogo;
   document.getElementById('border-color-input').onchange = updateLogo;
   document.getElementById('eyes-color-input').onchange = updateLogo;
+  document.getElementById('fa-input').onchange = updateLogo;
+  document.getElementById('fa-color-input').onchange = updateLogo;
+  document.getElementById('fa-top-input').onchange = updateLogo;
+  document.getElementById('fa-left-input').onchange = updateLogo;
+  document.getElementById('fa-size-input').onchange = updateLogo;
 
   function updateLogo() {
-    document.getElementById('width-input').onchange();
     renderCustomLogo();
   }
+
+  var firstTime = true;
 
   function renderCustomLogo() {
     var height = parseInt(document.getElementById('height-input').value);
@@ -146,7 +154,43 @@
       textEnabled: renderText,
       width: width
     });
+
+    var faIcon = document.getElementById('fa-input').value;
+    var faColor = document.getElementById('fa-color-input').value;
+    var faTop = parseInt(document.getElementById('fa-top-input').value);
+    var faLeft = parseInt(document.getElementById('fa-left-input').value);
+    var faSize = parseInt(document.getElementById('fa-size-input').value);
+
+    var icon = document.getElementById('fa');
+    icon.className = faIcon;
+    icon.style.display = 'none';
+
+    var content = window.getComputedStyle(icon, ':before').content;
+    var font = '"Font Awesome 5 Free"';
+    var fontSize = faSize + 'px';
+    var fontWeight = '400';
+
+    if (content !== 'none') {
+      if (faIcon.startsWith('fas ')) {
+        fontWeight = '900';
+      } else if (faIcon.startsWith('fab ')) {
+        font = '"Font Awesome 5 Brands"';
+      }
+
+      logoCustom.ctx.font = fontWeight + ' ' + fontSize + ' ' + font;
+      logoCustom.ctx.fillStyle = faColor;
+
+      logoCustom.ctx.fillText(eval(content), faLeft, faTop);
+
+      if (firstTime) {
+        firstTime = false;
+        setTimeout(function() {
+          renderCustomLogo();
+        }, 300);
+      }
+    }
   }
+
   renderCustomLogo();
 
 }());
