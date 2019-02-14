@@ -63,8 +63,8 @@
       this.height = this.canvas.clientHeight;
     }
 
-    this.canvas.height = this.height;
-    this.canvas.width = this.width;
+    this.canvas.height = this.height + this.marginBottom + this.marginTop;
+    this.canvas.width = this.width + this.marginRight + this.marginLeft;
 
     if (this.textEnabled && (this.backgroundEnabled || this.mantaEnabled)) {
       if (this.horizontal) {
@@ -92,6 +92,10 @@
     this.eyesColor = 'rgb(255, 255, 255)';
 
     this.width = element.clientWidth;
+    this.marginBottom = 0;
+    this.marginLeft = 0;
+    this.marginRight = 0;
+    this.marginTop = 0;
     this.height = element.clientHeight;
 
     this.canvas.height = this.height;
@@ -200,11 +204,11 @@
   MagnetLogo.prototype.center = function() {
     var oy;
 
-    var ox = (
+    var ox = this.marginLeft + (
         this.width - this.scale * this.logoWidth) /
       2 / this.scale;
 
-    oy = (
+    oy = this.marginTop + (
       this.height - this.scale * this.logoHeight) /
       2 / this.scale;
 

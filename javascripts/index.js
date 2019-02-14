@@ -116,6 +116,10 @@
   document.getElementById('fa-top-input').onchange = updateLogo;
   document.getElementById('fa-left-input').onchange = updateLogo;
   document.getElementById('fa-size-input').onchange = updateLogo;
+  document.getElementById('margin-top-input').onchange = updateLogo;
+  document.getElementById('margin-bottom-input').onchange = updateLogo;
+  document.getElementById('margin-left-input').onchange = updateLogo;
+  document.getElementById('margin-right-input').onchange = updateLogo;
 
   function updateLogo() {
     renderCustomLogo();
@@ -126,6 +130,18 @@
   function renderCustomLogo() {
     var height = parseInt(document.getElementById('height-input').value);
     var width = parseInt(document.getElementById('width-input').value);
+
+    var marginTop = parseInt(document.getElementById('margin-top-input').value);
+    var marginBottom = parseInt(
+      document.getElementById('margin-bottom-input').value
+    );
+    var marginLeft = parseInt(
+      document.getElementById('margin-left-input').value
+    );
+    var marginRight = parseInt(
+      document.getElementById('margin-right-input').value
+    );
+
     var logoCustom = new MagnetLogo(document.getElementById('logo-custom'));
     var vertical = document.getElementById('vertical-input').checked;
     var renderText = document.getElementById('render-text-input').checked;
@@ -150,6 +166,10 @@
       horizontal: !vertical,
       mantaColor: mantaColor,
       mantaEnabled: renderManta,
+      marginBottom: marginBottom,
+      marginLeft: marginLeft,
+      marginRight: marginRight,
+      marginTop: marginTop,
       textColor: textColor,
       textEnabled: renderText,
       width: width
