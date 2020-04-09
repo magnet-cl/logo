@@ -94,21 +94,6 @@
         </code>
       </p>
       <canvas id='logo-horizontal'></canvas>
-      <p>Render can take the colors of the elements as parameters and can animate with a default animation.</p>
-      <p>
-        <code>
-          var logoAnimated = new MagnetLogo(document.getElementById('logo-animation'));
-          <br>
-
-          logoAnimated.render({
-          backgroundColor: '#00ff00',
-          mantaColor: '#ff0000',
-          textColor: '#0000ff'
-          });
-          logoAnimated.animate();
-        </code>
-      </p>
-      <canvas id='logo-animation' style="width:100%;"></canvas>
 
       <h2>
         <a id="user-content-defaults" class="anchor" href="#defaults" aria-hidden="true"><span class="octicon octicon-link"></span>Defaults</a></h2>
@@ -116,11 +101,11 @@
       <p>Default colors are:</p>
 
       <ul>
-        <li>background:  rgb(40, 175, 206) (#28AFCE) cmyk(0.806, 0.15, 0, 0.192)</li>
-        <li>manta ray: rgb(40, 175, 206) (#28AFCE) cmyk(0.806, 0.15, 0, 0.192)</li>
-        <li>text: rgb(87, 87, 87) (#575757) cmyk(0, 0, 0, 0.659)</li>
-        <li>Manta border: rgb(255, 255, 255) (#ffffff) cmyk(0, 0, 0, 0)</li>
-        <li>Manta eyes: rgb(255, 255, 255) (#ffffff) cmyk(0, 0, 0, 0)</li>
+        <li>background: rgb(255, 255, 255) (#ffffff)</li>
+        <li>manta ray: rgb(0, 131, 186) (#0083BA)</li>
+        <li>text: rgb(102, 102, 102) (#666666)</li>
+        <li>Manta border: rgb(0, 131, 186) (#0083BA)</li>
+        <li>Manta eyes: rgb(255, 255, 255) (#ffffff)</li>
       </ul>
 
       <h2>
@@ -183,7 +168,7 @@
                 <label for="width-input">Manta color</label>
               </th>
               <td colspan="3">
-                <input type="text" class="form-control" id="manta-color-input" placeholder="width" value="#28AFCE">
+                <input type="text" class="form-control" id="manta-color-input" placeholder="width" value="#0083BA">
               </td>
             </tr>
             <tr>
@@ -191,13 +176,13 @@
                 <label for="width-input">Text color</label>
               </th>
               <td colspan="3">
-                <input type="text" class="form-control" id="text-color-input" placeholder="width" value="#575757">
+                <input type="text" class="form-control" id="text-color-input" placeholder="width" value="#666666">
               </td>
               <th colspan="3">
                 <label for="width-input">Border color</label>
               </th>
               <td colspan="3">
-                <input type="border" class="form-control" id="border-color-input" placeholder="width" value="#FFFFFF">
+                <input type="border" class="form-control" id="border-color-input" placeholder="width" value="#0083BA">
               </td>
             </tr>
             <tr>
@@ -205,7 +190,7 @@
                 <label for="width-input">Background color</label>
               </th>
               <td colspan="6">
-                <input type="text" class="form-control" id="background-color-input" placeholder="width" value="#28AFCE">
+                <input type="text" class="form-control" id="background-color-input" placeholder="width" value="#FFFFFF">
               </td>
             </tr>
             <tr>

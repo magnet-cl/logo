@@ -34,15 +34,6 @@
 
   window.logoHorizontal = logoHorizontal;
 
-  // render only the mantaray
-  var logoAnimated = new MagnetLogo(document.getElementById('logo-animation'));
-  logoAnimated.render({
-    backgroundColor: '#00ff00',
-    mantaColor: '#ff0000',
-    textColor: '#0000ff'
-  });
-  logoAnimated.animate();
-
   document.getElementById('width-input').onchange = function() {
     var width = parseInt(this.value);
     var verticalInput = document.getElementById('vertical-input');
@@ -56,12 +47,12 @@
     if (renderText) {
       if (renderBackground || renderManta) {
         if (verticalInput.checked) {
-          heightInput.value = parseInt(width * 689 / 600);
+          heightInput.value = parseInt(width * 69 / 60);
         } else {
           heightInput.value = parseInt(width / 3);
         }
       } else {
-        heightInput.value = parseInt(width * 64 / 600);
+        heightInput.value = parseInt(width * 6 / 60);
       }
     } else {
       heightInput.value = width;
@@ -83,13 +74,13 @@
     if (renderText) {
       if (renderBackground || renderManta) {
         if (verticalInput.checked) {
-          widthInput.value = parseInt(height * 600 / 689);
+          widthInput.value = parseInt(height * 60 / 69);
         } else {
           widthInput.value = parseInt(height * 3);
         }
       } else {
         if (verticalInput.checked) {
-          widthInput.value = parseInt(height * 600 / 61);
+          widthInput.value = parseInt(height * 60 / 6);
         } else {
           widthInput.value = parseInt(height * 3);
         }
