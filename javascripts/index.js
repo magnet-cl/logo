@@ -12,7 +12,7 @@
     textEnabled: false
   });
 
-  // render only the mantaray
+  // render only the text
   var logoText = new MagnetLogo(document.getElementById('logo-text'));
 
   logoText.render({
@@ -23,13 +23,11 @@
   window.logoText = logoText;
 
   // horizontal render
-  var el = document.getElementById('logo-horizontal');
-  var logoHorizontal = new MagnetLogo(el);
-
+  var logoHorizontal = new MagnetLogo(
+    document.getElementById('logo-horizontal')
+  );
   logoHorizontal.render({
-    horizontal: true,
-    height: 250,
-    width: 750
+    horizontal: true
   });
 
   window.logoHorizontal = logoHorizontal;
