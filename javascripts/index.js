@@ -32,59 +32,57 @@
 
   window.logoHorizontal = logoHorizontal;
 
-  document.getElementById('width-input').onchange = function() {
-    var width = parseInt(this.value);
+  function getAspectRatio(renderText, renderManta, vertical) {
+    if (renderText) {
+      if (renderManta) {
+        if (vertical) {
+          return MagnetLogo.verticalIsologotypeRatio;
+        }
+
+        return MagnetLogo.horizontalIsologotypeRatio;
+      }
+
+      return MagnetLogo.logotypeRatio;
+    }
+
+    return MagnetLogo.isotypeRatio;
+  }
+
+  function updateHeightInput() {
+    var width = parseInt(document.getElementById('width-input').value);
     var verticalInput = document.getElementById('vertical-input');
     var heightInput = document.getElementById('height-input');
     var renderText = document.getElementById('render-text-input').checked;
-    var renderBackground = document.getElementById(
-      'render-background-input'
-    ).checked;
     var renderManta = document.getElementById('render-manta-input').checked;
+    var fixedRatio = document.getElementById('fixed-ratio-input').checked;
 
-    if (renderText) {
-      if (renderBackground || renderManta) {
-        if (verticalInput.checked) {
-          heightInput.value = parseInt(width * 69 / 60);
-        } else {
-          heightInput.value = parseInt(width / 3);
-        }
-      } else {
-        heightInput.value = parseInt(width * 6 / 60);
-      }
-    } else {
-      heightInput.value = width;
+    if (fixedRatio) {
+      var aspectRatio = getAspectRatio(
+        renderText, renderManta, verticalInput.checked
+      );
+
+      heightInput.value = parseInt(width / aspectRatio);
     }
 
     renderCustomLogo();
-  };
+  }
+
+  document.getElementById('width-input').onchange = updateHeightInput;
 
   document.getElementById('height-input').onchange = function() {
     var height = parseInt(this.value);
     var verticalInput = document.getElementById('vertical-input');
     var widthInput = document.getElementById('width-input');
     var renderText = document.getElementById('render-text-input').checked;
-    var renderBackground = document.getElementById(
-      'render-background-input'
-    ).checked;
     var renderManta = document.getElementById('render-manta-input').checked;
+    var fixedRatio = document.getElementById('fixed-ratio-input').checked;
 
-    if (renderText) {
-      if (renderBackground || renderManta) {
-        if (verticalInput.checked) {
-          widthInput.value = parseInt(height * 60 / 69);
-        } else {
-          widthInput.value = parseInt(height * 3);
-        }
-      } else {
-        if (verticalInput.checked) {
-          widthInput.value = parseInt(height * 60 / 6);
-        } else {
-          widthInput.value = parseInt(height * 3);
-        }
-      }
-    } else {
-      widthInput.value = height;
+    if (fixedRatio) {
+      var aspectRatio = getAspectRatio(
+        renderText, renderManta, verticalInput.checked
+      );
+
+      widthInput.value = parseInt(height * aspectRatio);
     }
 
     renderCustomLogo();
@@ -109,8 +107,15 @@
   document.getElementById('margin-bottom-input').onchange = updateLogo;
   document.getElementById('margin-left-input').onchange = updateLogo;
   document.getElementById('margin-right-input').onchange = updateLogo;
+  document.getElementById('fixed-ratio-input').onchange = updateLogo;
 
   function updateLogo() {
+    var fixedRatio = document.getElementById('fixed-ratio-input').checked;
+
+    if (fixedRatio) {
+      updateHeightInput();
+    }
+
     renderCustomLogo();
   }
 
@@ -201,5 +206,6 @@
   }
 
   renderCustomLogo();
+  document.getElementById('width-input').onchange();
 
 }());
