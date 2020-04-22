@@ -171,9 +171,9 @@
 
     var faIcon = document.getElementById('fa-input').value;
     var faColor = document.getElementById('fa-color-input').value;
-    var faTop = parseInt(document.getElementById('fa-top-input').value);
-    var faLeft = parseInt(document.getElementById('fa-left-input').value);
-    var faSize = parseInt(document.getElementById('fa-size-input').value);
+    var faTop = parseFloat(document.getElementById('fa-top-input').value);
+    var faLeft = parseFloat(document.getElementById('fa-left-input').value);
+    var faSize = parseFloat(document.getElementById('fa-size-input').value);
 
     var icon = document.getElementById('fa');
     icon.className = faIcon;
