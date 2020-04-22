@@ -19,20 +19,40 @@
     this.setup(element, options);
   }
 
+  // ratios are width / height
+  MagnetLogo.drawginPadding = 1.629822;
+  MagnetLogo.isotypeHeight = 53.466718 + MagnetLogo.drawginPadding;
+  MagnetLogo.isologotypeHeight = 66.56860 + MagnetLogo.drawginPadding;
+  MagnetLogo.logotypeHeight = (
+    MagnetLogo.isologotypeHeight -
+    58.101936 +
+    MagnetLogo.drawginPadding
+  );
+
+  MagnetLogo.isotypeWidth = 57.996102 + MagnetLogo.drawginPadding;
+  MagnetLogo.isologotypeWidth = MagnetLogo.isotypeWidth;
+  MagnetLogo.logotypeWidth = MagnetLogo.isotypeWidth;
+
+  MagnetLogo.logotypeRatio = (
+    MagnetLogo.logotypeWidth / MagnetLogo.logotypeHeight
+  );
+  MagnetLogo.isotypeRatio = (
+    MagnetLogo.isotypeWidth / MagnetLogo.isotypeHeight
+  );
+  MagnetLogo.verticalIsologotypeRatio = (
+    MagnetLogo.isologotypeWidth / MagnetLogo.isologotypeHeight
+  );
+
+  MagnetLogo.horizontalTextScale = 2.6;
+  MagnetLogo.horizontalIsologotypeRatio = (
+    MagnetLogo.isologotypeWidth * (1 + MagnetLogo.horizontalTextScale) /
+    MagnetLogo.isologotypeHeight
+  );
+
   /**
    * MagnetLogo.setup - Sets the values used to draw a the Magnet logo
    */
   MagnetLogo.prototype.setup = function(element, options) {
-    // set values not stablished by options
-    this.drawginPadding = 1.629822;
-    this.isotypeHeight = 53.466718 + this.drawginPadding;
-    this.isologotypeHeight = 66.56860 + this.drawginPadding;
-    this.logotypeHeight = 66.568602 - 58.101936 + this.drawginPadding * 2;
-
-    this.isotypeWidth = 57.996102 + this.drawginPadding;
-    this.isologotypeWidth = this.isotypeWidth;
-    this.logotypeWidth = this.isotypeWidth;
-
     this.ctx = this.canvas.getContext('2d');
 
     this.setDefaults(element);
@@ -75,22 +95,22 @@
     // Vertical width
     // Horizontal width
 
-    this.drawingWidth = this.isotypeWidth;
+    this.drawingWidth = MagnetLogo.isotypeWidth;
 
     //if there is no maanta, assume there is only text
     if (!this.mantaEnabled) {
-      this.drawingHeight = this.logotypeHeight;
+      this.drawingHeight = MagnetLogo.logotypeHeight;
     } else if (this.textEnabled) {
       // there is text and manta
       if (this.horizontal) {
-        this.drawingHeight = this.isotypeHeight;
-        this.drawingWidth *= 3;
+        this.drawingHeight = MagnetLogo.isotypeHeight;
+        this.drawingWidth *= 3.65;
       } else {
-        this.drawingHeight = this.isologotypeHeight;
+        this.drawingHeight = MagnetLogo.isologotypeHeight;
       }
     } else {
       // there is only a manta
-      this.drawingHeight = this.isotypeHeight;
+      this.drawingHeight = MagnetLogo.isotypeHeight;
     }
   };
 
@@ -160,7 +180,7 @@
 
     if (this.textEnabled && !this.mantaEnabled) {
       // since we are only rendering the text, we need to move the text up
-      topOffset = this.isotypeHeight + this.drawginPadding;
+      topOffset = MagnetLogo.isotypeHeight + MagnetLogo.drawginPadding;
     }
 
     var newWidthScale = this.width / this.drawingWidth;
@@ -504,8 +524,11 @@
     }
 
     if (this.mantaEnabled && this.horizontal) {
-      this.ctx.scale(1.9, 1.9);
-      this.ctx.translate(35, -50);
+      this.ctx.scale(
+        MagnetLogo.horizontalTextScale,
+        MagnetLogo.horizontalTextScale
+      );
+      this.ctx.translate(25, -52);
     }
 
     if (color) {

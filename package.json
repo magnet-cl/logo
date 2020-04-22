@@ -1,0 +1,22 @@
+{
+  "name": "magnet-logo",
+  "version": "1.0.0",
+  "description": "A logo Magnet SPA (Chile) logo generator",
+  "main": "index.js",
+  "dependencies": {
+    "node-minify": "^3.6.0"
+  },
+  "scripts": {
+    "build": "./node_modules/node-minify/bin/cli.js --input logo.js --output 'logo.min.js'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/magnet-cl/logo.git"
+  },
+  "author": "Magnet-cl",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/magnet-cl/logo/issues"
+  },
+  "homepage": "https://github.com/magnet-cl/logo#readme"
+}
