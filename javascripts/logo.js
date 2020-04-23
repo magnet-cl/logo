@@ -86,25 +86,17 @@
 
     // Give the canvas pixel dimensions of their CSS
     // size * the device pixel ratio.
-    this.canvas.height = (
-      this.height + this.marginBottom + this.marginTop
-    ) * dpr;
-    this.canvas.width = (
-      this.width + this.marginRight + this.marginLeft
-    ) * dpr;
+    this.canvas.height = this.height * dpr;
+    this.canvas.width = this.width * dpr;
 
     // Scale all drawing operations by the dpr, so you
     // don't have to worry about the difference.
     var ctx = this.canvas.getContext('2d');
     ctx.scale(dpr, dpr);
 
-    this.canvas.style.width = (
-      this.width + this.marginRight + this.marginLeft
-    ) + 'px';
+    this.canvas.style.width = this.width + 'px';
 
-    this.canvas.style.height = (
-      this.height + this.marginBottom + this.marginTop
-    ) + 'px';
+    this.canvas.style.height = this.height + 'px';
 
     // There are 3 heights:
     // Logotype
