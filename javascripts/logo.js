@@ -140,7 +140,7 @@
    */
   MagnetLogo.prototype.setDefaults = function(element) {
     // set the colors
-    this.backgroundColor = 'rgb(255, 255, 255)';
+    this.backgroundColor = 'transparent';
     this.mantaColor = 'rgb(0, 131, 186)';
     this.textColor = 'rgb(102, 102, 102)';
     this.borderColor = 'rgb(0, 131, 186)';
@@ -300,7 +300,6 @@
 
     // #rectBackground
     ctx.beginPath();
-    ctx.globalAlpha = 0.97;
     ctx.lineJoin = 'miter';
     ctx.lineCap = 'butt';
     ctx.miterLimit = 4;
