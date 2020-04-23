@@ -114,9 +114,9 @@
 
     if (fixedRatio) {
       updateHeightInput();
+    } else {
+      renderCustomLogo();
     }
-
-    renderCustomLogo();
   }
 
   var firstTime = true;
@@ -205,7 +205,6 @@
     }
   }
 
-  renderCustomLogo();
   document.getElementById('width-input').onchange();
 
 }());

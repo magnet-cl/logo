@@ -57,8 +57,6 @@
 
     this.setDefaults(element);
     this.setOptions(options);
-
-    this.swimWait = true;
   };
 
   /**
@@ -67,6 +65,9 @@
    */
   MagnetLogo.prototype.setOptions = function(options) {
     var i;
+
+    // Get the device pixel ratio, falling back to 1.
+    var dpr = window.devicePixelRatio || 1;
 
     // Force options to be an object
     options = options || {};
@@ -83,8 +84,27 @@
       this.height = this.canvas.clientHeight;
     }
 
-    this.canvas.height = this.height + this.marginBottom + this.marginTop;
-    this.canvas.width = this.width + this.marginRight + this.marginLeft;
+    // Give the canvas pixel dimensions of their CSS
+    // size * the device pixel ratio.
+    this.canvas.height = (
+      this.height + this.marginBottom + this.marginTop
+    ) * dpr;
+    this.canvas.width = (
+      this.width + this.marginRight + this.marginLeft
+    ) * dpr;
+
+    // Scale all drawing operations by the dpr, so you
+    // don't have to worry about the difference.
+    var ctx = this.canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    this.canvas.style.width = (
+      this.width + this.marginRight + this.marginLeft
+    ) + 'px';
+
+    this.canvas.style.height = (
+      this.height + this.marginBottom + this.marginTop
+    ) + 'px';
 
     // There are 3 heights:
     // Logotype
@@ -170,7 +190,8 @@
     this.drawManta();
     this.drawText();
   };
-/**
+
+  /**
    * MagnetLogo.fitContainer - changes the scale of the image to be drawn
    * completly within the canvas
    */
@@ -185,7 +206,6 @@
 
     var newWidthScale = this.width / this.drawingWidth;
     var newHeightScale = this.height / this.drawingHeight;
-    console.log(this.drawingWidth, this.drawingHeight);
 
     if (newWidthScale < newHeightScale) {
       this.scale = newWidthScale;
