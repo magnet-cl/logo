@@ -343,7 +343,11 @@
     // #pathMantaPerimeter
     ctx.beginPath();
     ctx.strokeStyle = this.borderColor;
-    ctx.lineWidth = 0.100000;
+    if (this.borderColor == this.mantaColor) {
+      ctx.lineWidth = 0.010000;
+    } else {
+      ctx.lineWidth = 0.500000;
+    }
     ctx.fillStyle = this.mantaColor;
 
     // Global movement
