@@ -84,19 +84,21 @@
       this.height = this.canvas.clientHeight;
     }
 
+    this.cssWidth =  this.width + this.marginLeft + this.marginRight;
+    this.cssHeight = this.height + this.marginTop + this.marginBottom;
+
     // Give the canvas pixel dimensions of their CSS
     // size * the device pixel ratio.
-    this.canvas.height = this.height * dpr;
-    this.canvas.width = this.width * dpr;
+    this.canvas.height = this.cssHeight * dpr;
+    this.canvas.width = this.cssWidth * dpr;
 
     // Scale all drawing operations by the dpr, so you
     // don't have to worry about the difference.
     var ctx = this.canvas.getContext('2d');
     ctx.scale(dpr, dpr);
 
-    this.canvas.style.width = this.width + 'px';
-
-    this.canvas.style.height = this.height + 'px';
+    this.canvas.style.width = this.cssWidth + 'px';
+    this.canvas.style.height = this.cssHeight + 'px';
 
     // There are 3 heights:
     // Logotype
@@ -215,15 +217,13 @@
    * MagnetLogo.center - Aligns the logo with the canvas center.
    */
   MagnetLogo.prototype.center = function() {
-    var oy;
+    var ox = (
+      this.marginLeft + (this.width - this.scale * this.drawingWidth) / 2
+    ) / this.scale;
 
-    var ox = this.marginLeft + (
-      this.width - this.scale * this.drawingWidth) /
-      2 / this.scale;
-
-    oy = this.marginTop + (
-      this.height - this.scale * this.drawingHeight) /
-      2 / this.scale;
+    var oy = (
+      this.marginTop + (this.height - this.scale * this.drawingHeight) / 2
+    ) / this.scale;
 
     this.ctx.translate(ox, oy);
   };
@@ -297,14 +297,12 @@
     ctx.miterLimit = 4;
     ctx.fillStyle = this.backgroundColor;
     ctx.rect(
-      -this.drawingWidth,
-      -this.drawingHeight,
-      3 * this.drawingWidth,
-      3 * this.drawingHeight
+      -this.marginLeft,
+      -this.marginTop,
+      this.marginLeft + this.drawingWidth + this.marginRight,
+      this.marginTop + this.drawingHeight + this.marginBottom,
     );
-
     ctx.fill();
-    ctx.globalAlpha = 1;
   };
 
   /**

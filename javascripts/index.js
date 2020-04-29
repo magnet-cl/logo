@@ -169,6 +169,9 @@
       width: width
     });
 
+    document.getElementById('total-height').innerHTML = logoCustom.cssHeight;
+    document.getElementById('total-width').innerHTML = logoCustom.cssWidth;
+
     var faIcon = document.getElementById('fa-input').value;
     var faColor = document.getElementById('fa-color-input').value;
     var faTop = parseFloat(document.getElementById('fa-top-input').value);
