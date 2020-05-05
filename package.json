@@ -7,7 +7,7 @@
     "node-minify": "^3.6.0"
   },
   "scripts": {
-    "build": "./node_modules/node-minify/bin/cli.js --input logo.js --output 'logo.min.js'"
+    "build": "./node_modules/node-minify/bin/cli.js --input dist/logo.js --output 'dist/logo.min.js'"
   },
   "repository": {
     "type": "git",
