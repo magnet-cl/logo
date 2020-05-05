@@ -57,8 +57,6 @@
 
     this.setDefaults(element);
     this.setOptions(options);
-
-    this.swimWait = true;
   };
 
   /**
@@ -67,6 +65,9 @@
    */
   MagnetLogo.prototype.setOptions = function(options) {
     var i;
+
+    // Get the device pixel ratio, falling back to 1.
+    var dpr = window.devicePixelRatio || 1;
 
     // Force options to be an object
     options = options || {};
@@ -83,8 +84,21 @@
       this.height = this.canvas.clientHeight;
     }
 
-    this.canvas.height = this.height + this.marginBottom + this.marginTop;
-    this.canvas.width = this.width + this.marginRight + this.marginLeft;
+    this.cssWidth =  this.width + this.marginLeft + this.marginRight;
+    this.cssHeight = this.height + this.marginTop + this.marginBottom;
+
+    // Give the canvas pixel dimensions of their CSS
+    // size * the device pixel ratio.
+    this.canvas.height = this.cssHeight * dpr;
+    this.canvas.width = this.cssWidth * dpr;
+
+    // Scale all drawing operations by the dpr, so you
+    // don't have to worry about the difference.
+    var ctx = this.canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    this.canvas.style.width = this.cssWidth + 'px';
+    this.canvas.style.height = this.cssHeight + 'px';
 
     // There are 3 heights:
     // Logotype
@@ -120,7 +134,7 @@
    */
   MagnetLogo.prototype.setDefaults = function(element) {
     // set the colors
-    this.backgroundColor = 'rgb(255, 255, 255)';
+    this.backgroundColor = 'transparent';
     this.mantaColor = 'rgb(0, 131, 186)';
     this.textColor = 'rgb(102, 102, 102)';
     this.borderColor = 'rgb(0, 131, 186)';
@@ -170,7 +184,8 @@
     this.drawManta();
     this.drawText();
   };
-/**
+
+  /**
    * MagnetLogo.fitContainer - changes the scale of the image to be drawn
    * completly within the canvas
    */
@@ -185,7 +200,6 @@
 
     var newWidthScale = this.width / this.drawingWidth;
     var newHeightScale = this.height / this.drawingHeight;
-    console.log(this.drawingWidth, this.drawingHeight);
 
     if (newWidthScale < newHeightScale) {
       this.scale = newWidthScale;
@@ -203,15 +217,13 @@
    * MagnetLogo.center - Aligns the logo with the canvas center.
    */
   MagnetLogo.prototype.center = function() {
-    var oy;
+    var ox = (
+      this.marginLeft + (this.width - this.scale * this.drawingWidth) / 2
+    ) / this.scale;
 
-    var ox = this.marginLeft + (
-      this.width - this.scale * this.drawingWidth) /
-      2 / this.scale;
-
-    oy = this.marginTop + (
-      this.height - this.scale * this.drawingHeight) /
-      2 / this.scale;
+    var oy = (
+      this.marginTop + (this.height - this.scale * this.drawingHeight) / 2
+    ) / this.scale;
 
     this.ctx.translate(ox, oy);
   };
@@ -280,20 +292,17 @@
 
     // #rectBackground
     ctx.beginPath();
-    ctx.globalAlpha = 0.97;
     ctx.lineJoin = 'miter';
     ctx.lineCap = 'butt';
     ctx.miterLimit = 4;
     ctx.fillStyle = this.backgroundColor;
     ctx.rect(
-      -this.drawingWidth,
-      -this.drawingHeight,
-      3 * this.drawingWidth,
-      3 * this.drawingHeight
+      -this.marginLeft,
+      -this.marginTop,
+      this.marginLeft + this.drawingWidth + this.marginRight,
+      this.marginTop + this.drawingHeight + this.marginBottom
     );
-
     ctx.fill();
-    ctx.globalAlpha = 1;
   };
 
   /**
@@ -332,7 +341,12 @@
     // #pathMantaPerimeter
     ctx.beginPath();
     ctx.strokeStyle = this.borderColor;
-    ctx.lineWidth = 0.100000;
+    if (this.borderColor == this.mantaColor) {
+      ctx.lineWidth = 0.010000;
+    } else {
+      ctx.lineWidth = 0.500000;
+    }
+
     ctx.fillStyle = this.mantaColor;
 
     // Global movement
@@ -354,6 +368,7 @@
     this.ctx.bezierCurveTo(
       17.039054, 53.466718, 16.912054, 53.466718, 16.785054, 53.466718
     );
+
     // tip of tial
     this.ctx.bezierCurveTo(
       16.615720, 53.466718, 16.467554, 53.318551, 16.467554, 53.128051
@@ -392,6 +407,7 @@
     this.ctx.bezierCurveTo(
       24.553164, 2.412983, 25.336302, 1.629822, 26.309969, 1.629822
     );
+
     // right lip
     this.ctx.bezierCurveTo(
       27.643469, 1.629822, 28.871051, 2.137816, 29.823551, 2.963305
@@ -834,10 +850,12 @@
     // #pathT
     ctx.beginPath();
     ctx.fillStyle = this.textColor;
+
     // Bottom of the T
     ctx.moveTo(57.996102, 58.101936);
     ctx.lineTo(57.996102, 59.393102);
     ctx.lineTo(55.456384, 59.393102);
+
     // Top of the T
     ctx.lineTo(55.456384, 66.568602);
     ctx.lineTo(53.890051, 66.568602);
