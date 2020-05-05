@@ -300,7 +300,7 @@
       -this.marginLeft,
       -this.marginTop,
       this.marginLeft + this.drawingWidth + this.marginRight,
-      this.marginTop + this.drawingHeight + this.marginBottom,
+      this.marginTop + this.drawingHeight + this.marginBottom
     );
     ctx.fill();
   };
@@ -346,6 +346,7 @@
     } else {
       ctx.lineWidth = 0.500000;
     }
+
     ctx.fillStyle = this.mantaColor;
 
     // Global movement
@@ -367,6 +368,7 @@
     this.ctx.bezierCurveTo(
       17.039054, 53.466718, 16.912054, 53.466718, 16.785054, 53.466718
     );
+
     // tip of tial
     this.ctx.bezierCurveTo(
       16.615720, 53.466718, 16.467554, 53.318551, 16.467554, 53.128051
@@ -405,6 +407,7 @@
     this.ctx.bezierCurveTo(
       24.553164, 2.412983, 25.336302, 1.629822, 26.309969, 1.629822
     );
+
     // right lip
     this.ctx.bezierCurveTo(
       27.643469, 1.629822, 28.871051, 2.137816, 29.823551, 2.963305
@@ -847,10 +850,12 @@
     // #pathT
     ctx.beginPath();
     ctx.fillStyle = this.textColor;
+
     // Bottom of the T
     ctx.moveTo(57.996102, 58.101936);
     ctx.lineTo(57.996102, 59.393102);
     ctx.lineTo(55.456384, 59.393102);
+
     // Top of the T
     ctx.lineTo(55.456384, 66.568602);
     ctx.lineTo(53.890051, 66.568602);
