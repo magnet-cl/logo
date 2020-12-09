@@ -183,7 +183,7 @@
     icon.style.display = 'none';
 
     var content = window.getComputedStyle(icon, ':before').content;
-    var font = '"Font Awesome 5 Free"';
+    var font = '"Font Awesome 5 Pro"';
     var fontSize = faSize + 'px';
     var fontWeight = '400';
 
