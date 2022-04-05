@@ -20,16 +20,16 @@
   }
 
   // ratios are width / height
-  MagnetLogo.drawginPadding = 1.629822;
-  MagnetLogo.isotypeHeight = 53.466718 + MagnetLogo.drawginPadding;
-  MagnetLogo.isologotypeHeight = 66.56860 + MagnetLogo.drawginPadding;
+  MagnetLogo.drawingPadding = 1.629822;
+  MagnetLogo.isotypeHeight = 53.466718 + MagnetLogo.drawingPadding;
+  MagnetLogo.isologotypeHeight = 66.56860 + MagnetLogo.drawingPadding;
   MagnetLogo.logotypeHeight = (
     MagnetLogo.isologotypeHeight -
     58.101936 +
-    MagnetLogo.drawginPadding
+    MagnetLogo.drawingPadding
   );
 
-  MagnetLogo.isotypeWidth = 57.996102 + MagnetLogo.drawginPadding;
+  MagnetLogo.isotypeWidth = 57.996102 + MagnetLogo.drawingPadding;
   MagnetLogo.isologotypeWidth = MagnetLogo.isotypeWidth;
   MagnetLogo.logotypeWidth = MagnetLogo.isotypeWidth;
 
@@ -176,9 +176,7 @@
       this.fitContainer();
     }
 
-    if (this.position === 'center') {
-      this.center();
-    }
+    this.setPosition();
 
     this.drawBackground();
     this.drawManta();
@@ -195,7 +193,7 @@
 
     if (this.textEnabled && !this.mantaEnabled) {
       // since we are only rendering the text, we need to move the text up
-      topOffset = MagnetLogo.isotypeHeight + MagnetLogo.drawginPadding;
+      topOffset = MagnetLogo.isotypeHeight + MagnetLogo.drawingPadding;
     }
 
     var newWidthScale = this.width / this.drawingWidth;
@@ -214,18 +212,23 @@
   };
 
   /**
-   * MagnetLogo.center - Aligns the logo with the canvas center.
+   * MagnetLogo.setPosition - Aligns the logo with the canvas center.
    */
-  MagnetLogo.prototype.center = function() {
-    var ox = (
+  MagnetLogo.prototype.setPosition = function() {
+    if (this.position != 'center') {
+      this.paddingLeft = 0;
+      this.paddingTop = 0;
+      return;
+    }
+    this.paddingLeft = (
       this.marginLeft + (this.width - this.scale * this.drawingWidth) / 2
     ) / this.scale;
 
-    var oy = (
+    this.paddingTop = (
       this.marginTop + (this.height - this.scale * this.drawingHeight) / 2
     ) / this.scale;
 
-    this.ctx.translate(ox, oy);
+    this.ctx.translate(this.paddingLeft, this.paddingTop);
   };
 
   /**
@@ -296,12 +299,13 @@
     ctx.lineCap = 'butt';
     ctx.miterLimit = 4;
     ctx.fillStyle = this.backgroundColor;
-    ctx.rect(
-      -this.marginLeft,
-      -this.marginTop,
-      this.marginLeft + this.drawingWidth + this.marginRight,
-      this.marginTop + this.drawingHeight + this.marginBottom
+    ctx.fillRect(
+      -this.paddingLeft,
+      -this.paddingTop,
+      this.canvas.width,
+      this.canvas.height
     );
+
     ctx.fill();
   };
 
