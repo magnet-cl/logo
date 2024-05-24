@@ -422,3 +422,28 @@ td,
 th {
   padding: 0;
 }
+
+.bg-primary {
+  background-color: #0083BA;
+}
+.bg-secondary {
+  background-color: #003B54;
+}
+.bg-highlight {
+  background-color: #EB9A0E;
+}
+.bg-light {
+  background-color: #F2F9FC;
+}
+.bg-gray {
+  background-color: #CED4DA ;
+}
+.bg-text {
+  background-color: #666666;
+}
+.bg-dark {
+  background-color: #212529;
+}
+.bg-white {
+  background-color: #ffffff;
+}
