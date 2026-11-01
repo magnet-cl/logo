@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ruff format --check *)",
+      "Bash(npm audit)",
+      "Bash(npm audit --*)",
+      "Bash(ruff check)",
+      "Bash(ruff check .)"
+    ]
+  }
+}
