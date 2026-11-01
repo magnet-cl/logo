@@ -120,6 +120,29 @@
   }
 
   var firstTime = true;
+  var brand = 'MAGNET';
+
+  // default colors applied to the inputs when switching tabs
+  var brandColors = {
+    MAGNET: {manta: '#0083BA', text: '#666666'},
+    MANTA: {manta: '#003B54', text: '#003B54'}
+  };
+
+  // brand tabs: Magnet / Manta
+  var tabs = document.querySelectorAll('.brand-tab');
+  Array.prototype.forEach.call(tabs, function(tab) {
+    tab.onclick = function() {
+      brand = tab.getAttribute('data-brand');
+      document.getElementById('manta-color-input').value =
+        brandColors[brand].manta;
+      document.getElementById('text-color-input').value =
+        brandColors[brand].text;
+      Array.prototype.forEach.call(tabs, function(t) {
+        t.classList.toggle('active', t === tab);
+      });
+      updateLogo();
+    };
+  });
 
   function renderCustomLogo() {
     var height = parseInt(document.getElementById('height-input').value);
@@ -152,6 +175,8 @@
     var eyesColor = document.getElementById('eyes-color-input').value;
 
     logoCustom.render({
+      text: brand,
+      mantaShape: brand === 'MANTA' ? 'manta' : 'magnet',
       backgroundColor: backgroundColor,
       backgroundEnabled: renderBackground,
       borderColor: borderColor,
