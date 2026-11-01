@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <title>Gills de Manta - variaciones</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <style>
+      .main-content { max-width: 78rem; }
+      .gills-layout { display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-start; }
+      .gills-summary { flex: 0 0 240px; max-width: 100%; position: sticky; top: 1rem; }
+      .gills-summary canvas { border: 1px dashed #aaa; max-width: 100%; }
+      .gills-summary pre { white-space: pre-wrap; font-size: 0.8rem; background: #F2F9FC; padding: 0.75rem; border-radius: 0.3rem; }
+      .gills-options { flex: 1 1 700px; min-width: 0; }
+      .gill-row { margin-bottom: 1.25rem; }
+      .gill-row h4 { margin: 0 0 0.4rem; color: #003B54; }
+      .gill-row small { color: #666666; font-weight: 400; }
+      .variants { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+      .variant { display: flex; flex-direction: column; align-items: center; padding: 0.25rem; border: 2px solid #CED4DA; border-radius: 0.3rem; background: #fff; font: inherit; color: #666666; cursor: pointer; }
+      .variant:hover { border-color: #0083BA; }
+      .variant.selected { border-color: #0083BA; background: #F2F9FC; color: #0083BA; font-weight: 700; }
+      .variant canvas { display: block; border: 0; }
+      .variant .adjusted { font-size: 0.7rem; color: #EB9A0E; }
+      .gills-actions button { margin: 0 0.5rem 0.5rem 0; }
+    </style>
+    <script src="dist/logo.js"></script>
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Gills de Manta</h1>
+      <h2 class="project-tagline">Variaciones de grosor, posición y largo</h2>
+      <a href="index.html" class="btn">Volver al generador</a>
+    </section>
+
+    <section class="main-content">
+      <p>
+        Cada fila muestra variaciones de <strong>un</strong> parámetro de un
+        gill, manteniendo lo demás como está en la combinación actual. Haz clic
+        en una variante para elegirla: la combinación de la izquierda se
+        actualiza y las demás filas se recalculan a partir de ella. Los gills
+        siempre quedan dentro del cuerpo; si una variante se saldría, se ajusta
+        al máximo posible y se marca como <em>ajustado</em>.
+      </p>
+      <p>
+        Posición X/Y en unidades del logo (la manta mide ~58 de ancho; Y
+        positivo es hacia abajo). Largo y grosor son multiplicadores respecto
+        al gill original. La página parte de la combinación por defecto de
+        Manta; el código solo incluye lo que difiere de ella, y lo demás se
+        hereda.
+      </p>
+
+      <div class="gills-layout">
+        <div class="gills-summary">
+          <h3>Combinación actual</h3>
+          <canvas id="summary" width="240" height="276" style="width: 240px; height: 276px;"></canvas>
+          <p class="gills-actions">
+            <button type="button" class="download-btn" id="reset-btn">Valor de Manta</button>
+            <button type="button" class="download-btn" id="original-btn">Gills originales</button>
+            <button type="button" class="download-btn" id="copy-btn">Copiar código</button>
+          </p>
+          <pre id="code"></pre>
+        </div>
+        <div class="gills-options" id="options"></div>
+      </div>
+    </section>
+
+    <script src="javascripts/gills.js"></script>
+  </body>
+</html>
