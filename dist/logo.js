@@ -921,6 +921,35 @@
     });
     ctx.fillStyle = this.mantaColor;
     ctx.fill('evenodd');
+
+    // the gill lines are cut out of the body; fill them with the eyes color
+    // (unless it is transparent, in which case they stay as holes)
+    if (this.eyesColor && this.eyesColor !== 'transparent') {
+      MagnetLogo.mantaRayPaths.slice(1).forEach(function(pts) {
+        var n = pts.length;
+        var i;
+
+        ctx.beginPath();
+        ctx.moveTo(pts[0][0], pts[0][1]);
+
+        for (i = 0; i < n; i++) {
+          var p0 = pts[(i - 1 + n) % n];
+          var p1 = pts[i];
+          var p2 = pts[(i + 1) % n];
+          var p3 = pts[(i + 2) % n];
+
+          ctx.bezierCurveTo(
+            p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6,
+            p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6,
+            p2[0], p2[1]
+          );
+        }
+
+        ctx.closePath();
+        ctx.fillStyle = this.eyesColor;
+        ctx.fill();
+      }, this);
+    }
   };
 
   /**

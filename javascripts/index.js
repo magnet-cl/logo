@@ -135,8 +135,8 @@
 
   // default colors applied to the inputs when switching tabs
   var brandColors = {
-    MAGNET: {manta: '#0083BA', text: '#666666'},
-    MANTA: {manta: '#003B54', text: '#003B54'}
+    MAGNET: {manta: '#0083BA', text: '#666666', eyesLabel: 'Eyes color'},
+    MANTA: {manta: '#003B54', text: '#003B54', eyesLabel: 'Gill lines color'}
   };
 
   // brand tabs: Magnet / Manta
@@ -148,6 +148,8 @@
         brandColors[brand].manta;
       document.getElementById('text-color-input').value =
         brandColors[brand].text;
+      document.getElementById('eyes-color-label').textContent =
+        brandColors[brand].eyesLabel;
       Array.prototype.forEach.call(tabs, function(t) {
         t.classList.toggle('active', t === tab);
       });
