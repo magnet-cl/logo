@@ -967,6 +967,235 @@
     ctx.restore();
   };
 
+  /**
+   * MagnetLogo.SvgContext - Minimal CanvasRenderingContext2D look-alike that
+   * records the drawing operations used by MagnetLogo as SVG elements.
+   */
+  function SvgContext() {
+    this.measureCtx = document.createElement('canvas').getContext('2d');
+    this.reset();
+  }
+
+  SvgContext.round = function(n) {
+    return Math.round(n * 10000) / 10000;
+  };
+
+  SvgContext.escape = function(text) {
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/"/g, '&quot;');
+  };
+
+  SvgContext.prototype.reset = function() {
+    this.elements = [];
+    this.stack = [];
+    this.matrix = [1, 0, 0, 1, 0, 0];
+    this.path = '';
+    this.fillStyle = '#000000';
+    this.strokeStyle = '#000000';
+    this.lineWidth = 1;
+    this.lineJoin = 'miter';
+    this.lineCap = 'butt';
+    this.miterLimit = 10;
+    this.font = '10px sans-serif';
+    this.textAlign = 'start';
+    this.textBaseline = 'alphabetic';
+  };
+
+  SvgContext.prototype.save = function() {
+    this.stack.push({
+      matrix: this.matrix.slice(),
+      fillStyle: this.fillStyle,
+      strokeStyle: this.strokeStyle,
+      lineWidth: this.lineWidth,
+      font: this.font,
+      textAlign: this.textAlign,
+      textBaseline: this.textBaseline
+    });
+  };
+
+  SvgContext.prototype.restore = function() {
+    var state = this.stack.pop();
+
+    if (state) {
+      for (var i in state) {
+        if (state.hasOwnProperty(i)) {
+          this[i] = state[i];
+        }
+      }
+    }
+  };
+
+  SvgContext.prototype.transform = function(a, b, c, d, e, f) {
+    var m = this.matrix;
+
+    // like a real canvas, ignore transforms with non-finite values
+    if (![a, b, c, d, e, f].every(isFinite)) {
+      return;
+    }
+
+    this.matrix = [
+      m[0] * a + m[2] * b, m[1] * a + m[3] * b,
+      m[0] * c + m[2] * d, m[1] * c + m[3] * d,
+      m[0] * e + m[2] * f + m[4], m[1] * e + m[3] * f + m[5]
+    ];
+  };
+
+  SvgContext.prototype.scale = function(x, y) {
+    this.transform(x, 0, 0, y, 0, 0);
+  };
+
+  SvgContext.prototype.translate = function(x, y) {
+    this.transform(1, 0, 0, 1, x, y);
+  };
+
+  SvgContext.prototype.setTransform = function(a, b, c, d, e, f) {
+    if (![a, b, c, d, e, f].every(isFinite)) {
+      return;
+    }
+
+    this.matrix = [a, b, c, d, e, f];
+  };
+
+  SvgContext.prototype.beginPath = function() {
+    this.path = '';
+  };
+
+  SvgContext.prototype.closePath = function() {
+    this.path += 'Z';
+  };
+
+  SvgContext.prototype.moveTo = function(x, y) {
+    var r = SvgContext.round;
+    this.path += 'M' + r(x) + ' ' + r(y);
+  };
+
+  SvgContext.prototype.lineTo = function(x, y) {
+    var r = SvgContext.round;
+    this.path += 'L' + r(x) + ' ' + r(y);
+  };
+
+  SvgContext.prototype.bezierCurveTo = function(x1, y1, x2, y2, x, y) {
+    var r = SvgContext.round;
+    this.path += 'C' + [x1, y1, x2, y2, x, y].map(r).join(' ');
+  };
+
+  SvgContext.prototype.transformAttr = function() {
+    return ' transform="matrix(' +
+      this.matrix.map(SvgContext.round).join(' ') + ')"';
+  };
+
+  SvgContext.prototype.fill = function(rule) {
+    if (!this.path || this.fillStyle === 'transparent') {
+      return;
+    }
+
+    this.elements.push(
+      '<path d="' + this.path + '" fill="' +
+      SvgContext.escape(this.fillStyle) + '"' +
+      (rule === 'evenodd' ? ' fill-rule="evenodd"' : '') +
+      this.transformAttr() + '/>'
+    );
+  };
+
+  SvgContext.prototype.stroke = function() {
+    if (!this.path || this.strokeStyle === 'transparent') {
+      return;
+    }
+
+    this.elements.push(
+      '<path d="' + this.path + '" fill="none" stroke="' +
+      SvgContext.escape(this.strokeStyle) + '" stroke-width="' +
+      SvgContext.round(this.lineWidth) + '" stroke-linejoin="' +
+      this.lineJoin + '" stroke-linecap="' + this.lineCap +
+      '" stroke-miterlimit="' + this.miterLimit + '"' +
+      this.transformAttr() + '/>'
+    );
+  };
+
+  SvgContext.prototype.fillRect = function(x, y, width, height) {
+    var r = SvgContext.round;
+
+    if (this.fillStyle === 'transparent') {
+      return;
+    }
+
+    this.elements.push(
+      '<rect x="' + r(x) + '" y="' + r(y) + '" width="' + r(width) +
+      '" height="' + r(height) + '" fill="' +
+      SvgContext.escape(this.fillStyle) + '"' + this.transformAttr() + '/>'
+    );
+  };
+
+  SvgContext.prototype.clearRect = function() {
+    // the SVG is always built from scratch, nothing to clear
+  };
+
+  SvgContext.prototype.measureText = function(text) {
+    this.measureCtx.font = this.font;
+    return this.measureCtx.measureText(text);
+  };
+
+  SvgContext.prototype.fillText = function(text, x, y) {
+    var r = SvgContext.round;
+
+    this.elements.push(
+      '<text x="' + r(x) + '" y="' + r(y) + '" fill="' +
+      SvgContext.escape(this.fillStyle) + '" style="font: ' +
+      SvgContext.escape(this.font) + '"' + this.transformAttr() + '>' +
+      SvgContext.escape(text) + '</text>'
+    );
+  };
+
+  /**
+   * MagnetLogo.toSVG - Renders a logo with the given options (the same ones
+   * accepted by MagnetLogo.render) and returns it as an SVG string.
+   * @param {Object} options - The options object.
+   * @returns {string} The SVG document.
+   */
+  MagnetLogo.toSVG = function(options) {
+    var svgCtx = new SvgContext();
+    var canvas = {
+      tagName: 'CANVAS',
+      clientWidth: 0,
+      clientHeight: 0,
+      style: {},
+      getContext: function() {
+        return svgCtx;
+      }
+    };
+
+    // changing the size of a canvas resets its transform and content
+    ['width', 'height'].forEach(function(property) {
+      var value = 0;
+
+      Object.defineProperty(canvas, property, {
+        get: function() {
+          return value;
+        },
+        set: function(newValue) {
+          value = newValue;
+          svgCtx.reset();
+        }
+      });
+    });
+
+    var logo = new MagnetLogo(canvas);
+    logo.render(options);
+
+    // the context is scaled by the device pixel ratio, undo it
+    var dpr = window.devicePixelRatio || 1;
+    var width = logo.cssWidth;
+    var height = logo.cssHeight;
+
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<svg xmlns="http://www.w3.org/2000/svg" width="' + width +
+      '" height="' + height + '" viewBox="0 0 ' + width + ' ' + height +
+      '">\n<g transform="scale(' + (1 / dpr) + ')">\n' +
+      svgCtx.elements.join('\n') + '\n</g>\n</svg>\n';
+  };
+
   window.MagnetLogo = MagnetLogo;
 
 }());

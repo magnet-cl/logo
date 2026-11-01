@@ -155,7 +155,7 @@
     };
   });
 
-  function renderCustomLogo() {
+  function getCustomOptions() {
     var height = parseInt(document.getElementById('height-input').value);
     var width = parseInt(document.getElementById('width-input').value);
 
@@ -170,7 +170,6 @@
       document.getElementById('margin-right-input').value
     );
 
-    var logoCustom = new MagnetLogo(document.getElementById('logo-custom'));
     var vertical = document.getElementById('vertical-input').checked;
     var renderText = document.getElementById('render-text-input').checked;
     var renderBackground = document.getElementById(
@@ -185,7 +184,7 @@
     var borderColor = document.getElementById('border-color-input').value;
     var eyesColor = document.getElementById('eyes-color-input').value;
 
-    logoCustom.render({
+    return {
       text: brand,
       mantaShape: brand === 'MANTA' ? 'manta' : 'magnet',
       backgroundColor: backgroundColor,
@@ -203,7 +202,14 @@
       textColor: textColor,
       textEnabled: renderText,
       width: width
-    });
+    };
+  }
+
+  function renderCustomLogo() {
+    var logoCustom = new MagnetLogo(document.getElementById('logo-custom'));
+    var options = getCustomOptions();
+
+    logoCustom.render(options);
 
     document.getElementById('total-height').innerHTML = logoCustom.cssHeight;
     document.getElementById('total-width').innerHTML = logoCustom.cssWidth;
@@ -243,6 +249,33 @@
       }
     }
   }
+
+  function download(blob, extension) {
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+
+    link.href = url;
+    link.download = (brand === 'MANTA' ? 'manta' : 'magnet') +
+      '-logo.' + extension;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  // download the generated logo as a PNG
+  document.getElementById('download-btn').onclick = function() {
+    document.getElementById('logo-custom').toBlob(function(blob) {
+      download(blob, 'png');
+    }, 'image/png');
+  };
+
+  // download the generated logo as a vector SVG
+  document.getElementById('download-svg-btn').onclick = function() {
+    var svg = MagnetLogo.toSVG(getCustomOptions());
+
+    download(new Blob([svg], {type: 'image/svg+xml'}), 'svg');
+  };
 
   document.getElementById('width-input').onchange();
 
