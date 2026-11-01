@@ -41,6 +41,17 @@
       <p>Magnet logo made in canvas. Classed based and configurable.</p>
 
       <p>
+        This library generates the logos of two companies:
+        <strong>Magnet</strong> and <strong>Manta</strong>. Both are rendered
+        with the same <code>MagnetLogo</code> class. Magnet is the default;
+        to render the Manta logo (its own mantaray and the "MANTA" text), pass
+        <code>mantaShape: 'manta'</code> and <code>text: 'MANTA'</code> to
+        <code>render</code>. The examples below show the Magnet logo. To
+        generate either one, use the Magnet / Manta tabs in the
+        <a href="#logo-generator">Logo Generator</a>.
+      </p>
+
+      <p>
         To start, create an instance of the logo class "MagnetLogo". You can choose multiple 
         settings, but by default the render method renders the full image.
       </p>
@@ -91,6 +102,24 @@
         </code>
       </p>
       <canvas id='logo-horizontal' style="width:100%;"></canvas>
+
+      <p>
+        To render the Manta company logo, use <code>mantaShape: 'manta'</code>
+        and <code>text: 'MANTA'</code>.
+      </p>
+      <p>
+        <code>
+          var logoMantaCompany = new MagnetLogo(document.getElementById('logo-manta-company'));
+          <br>
+          logoMantaCompany.render({
+            mantaShape: 'manta',
+            text: 'MANTA',
+            mantaColor: '#003B54',
+            textColor: '#003B54'
+          });
+        </code>
+      </p>
+      <canvas id='logo-manta-company' style="width:100%; height: 400px;"></canvas>
 
       <h2>
         <a id="main-colors" class="anchor" href="#main-colors" aria-hidden="true"><span class="octicon octicon-link"></span>Colors</a>

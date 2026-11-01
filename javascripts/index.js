@@ -5,6 +5,17 @@
   var logo = new MagnetLogo(document.getElementById('logo'));
   logo.render();
 
+  // render the Manta company logo
+  var logoMantaCompany = new MagnetLogo(
+    document.getElementById('logo-manta-company')
+  );
+  logoMantaCompany.render({
+    mantaShape: 'manta',
+    text: 'MANTA',
+    mantaColor: '#003B54',
+    textColor: '#003B54'
+  });
+
   // render only the mantaray
   var logoManta = new MagnetLogo(document.getElementById('logo-manta'));
   logoManta.render({
