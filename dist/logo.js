@@ -79,6 +79,12 @@
       }
     }
 
+    // the Manta mantaray uses its own color for the border unless told
+    // otherwise
+    if (options.borderColor !== undefined) {
+      this.borderColorSet = true;
+    }
+
     if (options.fitToClientSize) {
       this.width = this.canvas.clientWidth;
       this.height = this.canvas.clientHeight;
@@ -138,6 +144,7 @@
     this.mantaColor = 'rgb(0, 131, 186)';
     this.textColor = 'rgb(102, 102, 102)';
     this.borderColor = 'rgb(0, 131, 186)';
+    this.borderColorSet = false;
     this.eyesColor = 'rgb(255, 255, 255)';
 
     this.width = element.clientWidth;
@@ -1100,6 +1107,20 @@
     });
     ctx.fillStyle = this.mantaColor;
     ctx.fill('evenodd');
+
+    // border around the body, in `borderColor`. It is only drawn when it
+    // differs from the color of the body, so that with a transparent body
+    // only the border is drawn.
+    var borderColor = this.borderColorSet ? this.borderColor : this.mantaColor;
+
+    if (borderColor !== this.mantaColor) {
+      ctx.beginPath();
+      MagnetLogo.traceSpline(ctx, shape[0]);
+      ctx.strokeStyle = borderColor;
+      ctx.lineWidth = 0.5;
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+    }
 
     // the gill lines are cut out of the body; fill them with the eyes color
     // (unless it is transparent, in which case they stay as holes)
