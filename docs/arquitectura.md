@@ -80,6 +80,13 @@ una lista de puntos `[x, y]` en unidades de logo:
 - Después cada gill se rellena con `eyesColor`, salvo que sea `transparent`:
   en ese caso se quedan como huecos y muestran el fondo.
 
+### Centrado
+
+La mantarraya de Manta no está centrada dentro de la caja del isotipo, así
+que con `mantaShape: 'manta'` el ancho del dibujo es el del cuerpo
+(`mantaBodyBounds`) más el margen a cada lado, y `render` desplaza el dibujo
+para que el cuerpo empiece en ese margen.
+
 ### Texto "MANTA" (`drawCustomText`)
 
 Cualquier `text` distinto de `'MAGNET'` se dibuja con `fillText`, con

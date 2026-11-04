@@ -117,6 +117,16 @@
 
     this.drawingWidth = MagnetLogo.isotypeWidth;
 
+    // the Manta mantaray is not centered in the isotype box: its box is the
+    // body itself plus the usual padding on both sides
+    if (this.mantaShape === 'manta') {
+      var bounds = MagnetLogo.mantaBodyBounds();
+
+      this.drawingWidth = (
+        bounds.right - bounds.left + 2 * MagnetLogo.drawingPadding
+      );
+    }
+
     //if there is no maanta, assume there is only text
     if (!this.mantaEnabled) {
       this.drawingHeight = MagnetLogo.logotypeHeight;
@@ -198,6 +208,15 @@
     this.setPosition();
 
     this.drawBackground();
+
+    if (this.mantaShape === 'manta') {
+      // move the body to the left padding, so it is centered in the box
+      this.ctx.translate(
+        MagnetLogo.drawingPadding - MagnetLogo.mantaBodyBounds().left,
+        0
+      );
+    }
+
     this.drawManta();
     this.drawText();
   };
