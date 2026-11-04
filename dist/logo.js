@@ -1135,6 +1135,53 @@
   };
 
   /**
+   * MagnetLogo.mantaBodyBounds - Horizontal extent of the drawn body of the
+   * Manta mantaray. It is measured on the smooth curve, which can go slightly
+   * past the outline points at the tips of the wings.
+   */
+  MagnetLogo.mantaBodyBounds = function() {
+    var left = Infinity;
+    var right = -Infinity;
+    var cx = 0;
+    var cy = 0;
+
+    function add(x) {
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+    }
+
+    // minimal context that samples every curve the spline traces
+    var probe = {
+      moveTo: function(x, y) {
+        cx = x;
+        cy = y;
+        add(x);
+      },
+      lineTo: function(x, y) {
+        cx = x;
+        cy = y;
+        add(x);
+      },
+      bezierCurveTo: function(x1, y1, x2, y2, x, y) {
+        for (var t = 0.02; t <= 1; t += 0.02) {
+          var u = 1 - t;
+          add(
+            u * u * u * cx + 3 * u * u * t * x1 + 3 * u * t * t * x2 +
+            t * t * t * x
+          );
+        }
+        cx = x;
+        cy = y;
+      },
+      closePath: function() {}
+    };
+
+    MagnetLogo.traceSpline(probe, MagnetLogo.mantaRayPaths[0]);
+
+    return {left: left, right: right};
+  };
+
+  /**
    * MagnetLogo.drawCustomText - Draws an arbitrary word (e.g. "MANTA") in the
    * same area and with the same width as the "MAGNET" text.
    */
@@ -1158,16 +1205,37 @@
     var total = 0;
     var i;
 
+    // measured at a large size: browsers round the metrics of small fonts
+    var big = 100;
+    ctx.font = '700 ' + fontSize * big + 'px ' + fontFamily;
+
     for (i = 0; i < text.length; i++) {
-      widths.push(ctx.measureText(text[i]).width);
+      widths.push(ctx.measureText(text[i]).width / big);
       total += widths[i];
     }
     total += spacing * (text.length - 1);
 
-    // scale horizontally so the word spans the same width as the isotype
-    var targetWidth = MagnetLogo.isotypeWidth - 2 * MagnetLogo.drawingPadding;
-    ctx.translate(MagnetLogo.drawingPadding, 0);
-    ctx.scale(targetWidth / total, 1);
+    // measure the real ink of the word (first and last glyph), not the
+    // advances, so the visible letters match the mantaray tip to tip
+    var first = ctx.measureText(text[0]);
+    var last = ctx.measureText(text[text.length - 1]);
+    ctx.font = '700 ' + fontSize + 'px ' + fontFamily;
+
+    var lastX = total - widths[text.length - 1];
+    var inkLeft = -(first.actualBoundingBoxLeft || 0) / big;
+    var inkRight = lastX + (
+      last.actualBoundingBoxRight || widths[text.length - 1] * big
+    ) / big;
+    var inkWidth = inkRight - inkLeft;
+
+    // span exactly the width of the mantaray body
+    var bounds = MagnetLogo.mantaBodyBounds();
+    var mantaLeft = bounds.left;
+    var mantaRight = bounds.right;
+
+    ctx.translate(mantaLeft, 0);
+    ctx.scale((mantaRight - mantaLeft) / inkWidth, 1);
+    ctx.translate(-inkLeft, 0);
 
     var x = 0;
     for (i = 0; i < text.length; i++) {

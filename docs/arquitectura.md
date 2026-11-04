@@ -85,7 +85,12 @@ una lista de puntos `[x, y]` en unidades de logo:
 Cualquier `text` distinto de `'MAGNET'` se dibuja con `fillText`, con
 tipografía en negrita (PT Sans, con Open Sans, Helvetica y Arial como
 alternativas), espaciado de letras de 0,12 em, y se estira en horizontal para
-ocupar el mismo ancho que la mantarraya. Es la única parte del logo que
+que la **tinta** de las letras (de la punta izquierda de la M a la derecha de
+la A) tenga el mismo ancho que el cuerpo de la mantarraya, de punta a punta de
+las alas. Ese ancho sale de `MagnetLogo.mantaBodyBounds()`, que mide la curva
+suave y no solo los puntos (la spline se pasa un poco en las puntas), y la
+tinta se mide con `actualBoundingBox*` a un tamaño 100 veces mayor, porque los
+navegadores redondean esas medidas a enteros en fuentes pequeñas. Es la única parte del logo que
 depende de las fuentes del equipo.
 
 ## Los gills ajustables
